@@ -1,12 +1,16 @@
+import { getFlashCookie } from "@server/utils";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
+	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import Header from "../components/Header";
+import nProgress from "nprogress";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 
@@ -35,18 +39,62 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 		],
 	}),
+	loader: () => {
+		const cookie = getFlashCookie();
 
+		return { cookie };
+	},
 	shellComponent: RootDocument,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const router = useRouterState({
+		select: (state) => ({
+			pathname: state.location.pathname,
+			status: state.status,
+		}),
+	});
+	const pathnameRef = useRef(router.pathname);
+	const { cookie } = Route.useLoaderData();
+
+	useEffect(() => {
+		if (!cookie) return;
+		setTimeout(
+			() =>
+				toast[cookie.intent](cookie.message, {
+					description: cookie.description,
+				}),
+			0,
+		);
+	}, [cookie]);
+
+	useEffect(() => {
+		const currentPathname = router.pathname;
+		const pathnameChanged = currentPathname !== pathnameRef.current;
+
+		nProgress.configure({
+			showSpinner: false,
+		});
+		if (pathnameChanged && router.status === "pending") {
+			nProgress.start();
+			pathnameRef.current = currentPathname;
+		}
+
+		if (router.status === "idle") {
+			nProgress.done();
+		}
+	}, [router.pathname, router.status]);
+
 	return (
 		<html lang="en">
-			<head>
+			<head
+				lang="en"
+				className="font-sans antialiased"
+				suppressHydrationWarning
+			>
 				<HeadContent />
 			</head>
 			<body>
-				<Header />
 				{children}
 				<TanstackDevtools
 					config={{
