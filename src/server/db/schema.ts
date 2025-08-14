@@ -104,8 +104,13 @@ export const categories = sqliteTable(
 			(): AnySQLiteColumn => categories.id,
 		),
 		imageId: integer("image_id"),
-		// isActive: boolean("is_active").notNull(),
-		// sortOrder: integer("sort_order").notNull(),
+		createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
+			() => new Date(),
+		),
+		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdateFn(() => new Date()),
 	},
 	(t) => [
 		uniqueIndex("categories_by_slug").on(t.slug),

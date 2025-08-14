@@ -24,6 +24,8 @@ import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
+import { Route as AdminProductsNewRouteImport } from './routes/admin/products/new'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -91,6 +93,16 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => authRouteRoute,
 } as any)
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
+  id: '/products/new',
+  path: '/products/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -109,6 +121,8 @@ export interface FileRoutesByFullPath {
   '/products': typeof customerProductsRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/products': typeof AdminProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof customerIndexRoute
@@ -122,6 +136,8 @@ export interface FileRoutesByTo {
   '/products': typeof customerProductsRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/products': typeof AdminProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,6 +154,8 @@ export interface FileRoutesById {
   '/(customer)/wishlist': typeof customerWishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/(customer)/': typeof customerIndexRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -153,6 +171,8 @@ export interface FileRouteTypes {
     | '/products'
     | '/wishlist'
     | '/admin/dashboard'
+    | '/admin/products/new'
+    | '/admin/products'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +186,8 @@ export interface FileRouteTypes {
     | '/products'
     | '/wishlist'
     | '/admin/dashboard'
+    | '/admin/products/new'
+    | '/admin/products'
   id:
     | '__root__'
     | '/(auth)'
@@ -181,6 +203,8 @@ export interface FileRouteTypes {
     | '/(customer)/wishlist'
     | '/admin/dashboard'
     | '/(customer)/'
+    | '/admin/products/new'
+    | '/admin/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -303,6 +327,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/products/new': {
+      id: '/admin/products/new'
+      path: '/products/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -357,10 +395,14 @@ const customerRouteRouteWithChildren = customerRouteRoute._addFileChildren(
 
 interface AdminRouteRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminProductsNewRoute: AdminProductsNewRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
