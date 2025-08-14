@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
 import { auth } from "@/lib/auth";
 import { signInSchema, signUpSchema } from "@/lib/schema";
 
@@ -37,3 +38,12 @@ export const $signUp = createServerFn({
 
 		return response;
 	});
+
+export const $getSignedInUser = createServerFn({
+	method: "GET",
+}).handler(async () => {
+	const request = getWebRequest();
+	return await auth.api.getSession({
+		headers: request.headers,
+	});
+});
