@@ -65,9 +65,9 @@ function RouteComponent() {
 
 	return (
 		<SidebarProvider shortcut="\" defaultOpen={data.sidebarState}>
-			<AppSidebar user={user} collapsible="dock" />
+			<AppSidebar user={user.user} collapsible="dock" />
 			<SidebarInset>
-				<AppSidebarNav title={title} user={user} />
+				<AppSidebarNav title={title} user={user.user} />
 				<Container className="p-4 lg:p-6 max-w- mx-auto py-0">
 					<Outlet />
 				</Container>

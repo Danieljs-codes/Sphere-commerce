@@ -15,6 +15,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as customerRouteRouteImport } from './routes/(customer)/route'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as customerIndexRouteImport } from './routes/(customer)/index'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as customerWishlistRouteImport } from './routes/(customer)/wishlist'
 import { Route as customerProductsRouteImport } from './routes/(customer)/products'
 import { Route as customerOrdersRouteImport } from './routes/(customer)/orders'
@@ -44,6 +45,11 @@ const customerIndexRoute = customerIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => customerRouteRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const customerWishlistRoute = customerWishlistRouteImport.update({
   id: '/wishlist',
@@ -93,7 +99,7 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof customerIndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/reset-password': typeof authResetPasswordRoute
   '/sign-in': typeof authSignInRoute
@@ -102,10 +108,11 @@ export interface FileRoutesByFullPath {
   '/orders': typeof customerOrdersRoute
   '/products': typeof customerProductsRoute
   '/wishlist': typeof customerWishlistRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof customerIndexRoute
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/reset-password': typeof authResetPasswordRoute
   '/sign-in': typeof authSignInRoute
@@ -114,12 +121,13 @@ export interface FileRoutesByTo {
   '/orders': typeof customerOrdersRoute
   '/products': typeof customerProductsRoute
   '/wishlist': typeof customerWishlistRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(auth)': typeof authRouteRouteWithChildren
   '/(customer)': typeof customerRouteRouteWithChildren
-  '/admin': typeof AdminRouteRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/(customer)/orders': typeof customerOrdersRoute
   '/(customer)/products': typeof customerProductsRoute
   '/(customer)/wishlist': typeof customerWishlistRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/(customer)/': typeof customerIndexRoute
 }
 export interface FileRouteTypes {
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/wishlist'
+    | '/admin/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/products'
     | '/wishlist'
+    | '/admin/dashboard'
   id:
     | '__root__'
     | '/(auth)'
@@ -168,13 +179,14 @@ export interface FileRouteTypes {
     | '/(customer)/orders'
     | '/(customer)/products'
     | '/(customer)/wishlist'
+    | '/admin/dashboard'
     | '/(customer)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   authRouteRoute: typeof authRouteRouteWithChildren
   customerRouteRoute: typeof customerRouteRouteWithChildren
-  AdminRouteRoute: typeof AdminRouteRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof customerIndexRouteImport
       parentRoute: typeof customerRouteRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/(customer)/wishlist': {
       id: '/(customer)/wishlist'
@@ -336,10 +355,22 @@ const customerRouteRouteWithChildren = customerRouteRoute._addFileChildren(
   customerRouteRouteChildren,
 )
 
+interface AdminRouteRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   authRouteRoute: authRouteRouteWithChildren,
   customerRouteRoute: customerRouteRouteWithChildren,
-  AdminRouteRoute: AdminRouteRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

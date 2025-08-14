@@ -1,4 +1,6 @@
-import { createServerFn } from "@tanstack/react-start";
+import { setFlashCookie } from "@server/utils";
+import { redirect } from "@tanstack/react-router";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 import { auth } from "@/lib/auth";
 import { signInSchema, signUpSchema } from "@/lib/schema";
@@ -57,3 +59,47 @@ export const $signOut = createServerFn({
 		asResponse: true,
 	});
 });
+
+export const authMiddleware = createMiddleware({ type: "function" }).server(
+	async ({ next }) => {
+		const session = await auth.api.getSession({
+			headers: getWebRequest().headers,
+		});
+
+		return next({
+			context: {
+				session,
+			},
+		});
+	},
+);
+
+export const adminMiddleware = createMiddleware({ type: "function" })
+	.middleware([authMiddleware])
+	.server(async ({ context, next }) => {
+		if (!context.session) {
+			setFlashCookie({
+				intent: "error",
+				message: "You must be signed in to access this page.",
+			});
+			throw redirect({
+				to: "/sign-in",
+			});
+		}
+
+		if (!context.session.user.isAdmin) {
+			setFlashCookie({
+				intent: "error",
+				message: "You must be an admin to access this page.",
+			});
+			throw redirect({
+				to: "/",
+			});
+		}
+
+		return next({
+			context: {
+				session: context.session,
+			},
+		});
+	});

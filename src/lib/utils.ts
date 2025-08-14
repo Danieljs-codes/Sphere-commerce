@@ -20,3 +20,10 @@ export const getNameInitials = (name: string) => {
 
 	return names[0].slice(0, 2).toUpperCase();
 };
+
+export const formatMoney = (amount: number) => {
+	return new Intl.NumberFormat("en-NG", {
+		style: "currency",
+		currency: "NGN",
+	}).format(amount / 100);
+};
