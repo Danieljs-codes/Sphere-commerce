@@ -1,4 +1,5 @@
 import { $getSignedInUser } from "@server/auth";
+import { $getExistingCategories } from "@server/categories";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
 import { $getProductPage, $getProductStats } from "@server/products";
 import { queryOptions } from "@tanstack/react-query";
@@ -67,6 +68,16 @@ export const getProductPageQueryOptions = ({
 					filter: undefined,
 				},
 			});
+
+			return data;
+		},
+	});
+
+export const getExistingCategoriesQueryOptions = () =>
+	queryOptions({
+		queryKey: ["dashboard", "categories"],
+		queryFn: async () => {
+			const data = await $getExistingCategories();
 
 			return data;
 		},

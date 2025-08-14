@@ -4,6 +4,7 @@ import { product } from "@server/db/schema";
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, sql } from "drizzle-orm";
 import z from "zod/v4";
+import { productFormSchema } from "@/lib/schema";
 
 export const $getProductStats = createServerFn()
 	.middleware([adminMiddleware])
@@ -64,4 +65,17 @@ export const $getProductPage = createServerFn()
 			page: results.slice(0, numItems),
 			hasNextPage,
 		};
+	});
+
+export const $createProduct = createServerFn({
+	method: "POST",
+})
+	.middleware([adminMiddleware])
+	.validator(
+		z.object({
+			...productFormSchema.shape,
+		}),
+	)
+	.handler(async ({ data }) => {
+		//
 	});

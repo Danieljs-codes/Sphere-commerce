@@ -4,7 +4,7 @@ import { categories } from "@server/db/schema";
 import { createServerFn } from "@tanstack/react-start";
 import { asc } from "drizzle-orm";
 
-export const getExistingCategories = createServerFn()
+export const $getExistingCategories = createServerFn()
 	.middleware([adminMiddleware])
 	.handler(async () => {
 		const categoriesRows = await db
