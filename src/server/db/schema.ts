@@ -4,8 +4,6 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
-	firstName: text("firstName"),
-	lastName: text("lastName"),
 	email: text("email").notNull().unique(),
 	emailVerified: integer("email_verified", {
 		mode: "boolean",
@@ -14,9 +12,6 @@ export const user = sqliteTable("user", {
 		.notNull(),
 	image: text("image"),
 	isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
-	banned: integer("banned", { mode: "boolean" }).notNull().default(false),
-	banReason: text("ban_reason"),
-	banExpires: integer("ban_expires", { mode: "timestamp" }),
 	createdAt: integer("created_at", {
 		mode: "timestamp",
 	})

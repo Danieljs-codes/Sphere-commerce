@@ -8,7 +8,8 @@ import {
 	IconSearch,
 	IconShoppingBag,
 } from "@intentui/icons";
-import { useQueryClient } from "@tanstack/react-query";
+import { $signOut } from "@server/auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ import {
 	NavbarTrigger,
 } from "@/components/ui/navbar";
 import { Separator } from "@/components/ui/separator";
-import { authClient } from "@/lib/auth-client";
+import { getSignedUserQueryOptions } from "@/lib/query-options";
 import { cn, getNameInitials } from "@/lib/utils";
 import type { User } from "@/types";
 import { Logo } from "./logo";
@@ -67,18 +68,17 @@ type AppNavbarProps = NavbarProps & {
 function UserMenu({ user }: { user: User }) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
-	const handleSignOut = async () => {
-		await authClient.signOut({
-			// fetchOptions: {
-			// 	onSuccess: () => {
-			// 		queryClient.removeQueries({
-			// 			queryKey: convexQuery(api.user.getSignedInUser, {}).queryKey,
-			// 		});
-			// 		router.invalidate();
-			// 	},
-			// },
-		});
-	};
+	const { mutateAsync: signOut } = useMutation({
+		mutationKey: ["auth", "sign-out"],
+		mutationFn: () => $signOut(),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: getSignedUserQueryOptions().queryKey,
+			});
+			await router.invalidate();
+		},
+		throwOnError: true, // This ensures errors are thrown to `toast.promise`
+	});
 
 	return (
 		<Menu>
@@ -172,7 +172,7 @@ function UserMenu({ user }: { user: User }) {
 					<Menu.Separator />
 					<Menu.Item
 						onPress={() =>
-							toast.promise(handleSignOut, {
+							toast.promise(signOut, {
 								loading: "Signing you out...",
 								success: "You have been signed out.",
 								error: "Failed to sign out. Please try again.",

@@ -47,3 +47,13 @@ export const $getSignedInUser = createServerFn({
 		headers: request.headers,
 	});
 });
+
+export const $signOut = createServerFn({
+	method: "POST",
+	response: "raw",
+}).handler(async () => {
+	return await auth.api.signOut({
+		headers: getWebRequest().headers,
+		asResponse: true,
+	});
+});

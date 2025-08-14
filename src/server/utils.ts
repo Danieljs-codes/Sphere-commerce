@@ -67,3 +67,19 @@ export const setFlashCookie = createIsomorphicFn()
 			document.cookie = `toast=${encodeURIComponent(JSON.stringify(data))}; path=/; max-age=${60 * 5}`;
 		},
 	);
+
+export const getSidebarState = createIsomorphicFn()
+	.server(() => {
+		const sidebarState = getCookie("sidebar_state");
+
+		if (!sidebarState) return false;
+		return JSON.parse(sidebarState);
+	})
+	.client(() => {
+		const sidebarState = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("sidebar_state="))
+			?.split("=")[1];
+		if (!sidebarState) return false;
+		return JSON.parse(decodeURIComponent(sidebarState));
+	});
