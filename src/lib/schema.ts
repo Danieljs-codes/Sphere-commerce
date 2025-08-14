@@ -98,9 +98,52 @@ export const productVariantsPublishSchema = z
 	});
 
 // Combined schema
+
 export const productFormSchema = z.object({
 	...productDetailsSchema.shape,
 	...productVariantsPublishSchema.shape,
 });
+
+// Backend schema for parsing FormData
+export const productFormBackendSchema = z.object({
+	name: z.string().min(3, "Product name must be at least 3 characters"),
+	price: z
+		.string()
+		.transform((val) => Number(val))
+		.refine((val) => !isNaN(val) && val >= 100, {
+			message: "Price must be at least ₦100",
+		}),
+	description: z
+		.string()
+		.min(
+			10,
+			"Please provide a more detailed description (at least 10 characters)",
+		),
+	categoryId: z.string().min(1, "Category is required"),
+	tags: z.string().transform((val) => {
+		try {
+			const arr = JSON.parse(val);
+			return Array.isArray(arr) ? arr : [];
+		} catch {
+			return [];
+		}
+	}),
+	images: z.any().array().nonempty("At least one image is required"), // Accept files from FormData
+	stockCount: z
+		.string()
+		.transform((val) => Number(val))
+		.refine((val) => !Number.isNaN(val) && val >= 1, {
+			message: "Stock count must be at least 1",
+		}),
+	status: z.enum(["draft", "active", "scheduled"]),
+	publishAt: z
+		.string()
+		.optional()
+		.transform((val) => (val ? Number(val) : undefined)),
+	metaTitle: z.string().optional(),
+	metaDescription: z.string().optional(),
+});
+
+export type ProductFormBackendData = z.infer<typeof productFormBackendSchema>;
 
 export type ProductFormData = z.infer<typeof productFormSchema>;

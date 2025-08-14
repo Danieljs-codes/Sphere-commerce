@@ -1,20 +1,28 @@
+import { ArchiveProductModal } from "@components/admin/archive-product-modal";
 import { MetricCard } from "@components/admin/metric-card";
 import { IconArchive } from "@components/icons/archive";
 import PlusSignSquareIcon from "@components/icons/plus-size-square-icon";
+import { IconRestore } from "@components/icons/restore";
 import {
 	IconChevronLeft,
 	IconChevronRight,
 	IconClipboardFill,
 	IconDotsVertical,
 } from "@intentui/icons";
+import type { Product } from "@server/db/schema";
+import { $restoreProduct } from "@server/products";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@ui/badge";
 import { Button, buttonStyles } from "@ui/button";
 import { Heading } from "@ui/heading";
 import { Link } from "@ui/link";
+import { Loader } from "@ui/loader";
 import { Menu } from "@ui/menu";
 import { Table } from "@ui/table";
 import { format } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
 import z from "zod/v4";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import {
@@ -56,6 +64,8 @@ export const Route = createFileRoute("/admin/products/")({
 });
 
 function RouteComponent() {
+	const queryClient = useQueryClient();
+	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 	const search = Route.useSearch();
 	const { data } = useSuspenseQueryDeferred(getProductStatsQueryOptions());
 	const { data: productsData } = useSuspenseQueryDeferred(
@@ -66,7 +76,29 @@ function RouteComponent() {
 		}),
 	);
 
-	console.log(data);
+	const { mutate: restoreProduct, isPending: isRestoring } = useMutation({
+		mutationFn: async (productId: string) => {
+			return $restoreProduct({
+				data: { productId },
+			});
+		},
+		onSuccess: async () => {
+			await Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: getProductStatsQueryOptions().queryKey,
+				}),
+				queryClient.invalidateQueries({
+					queryKey: getProductPageQueryOptions({
+						numItems: search.numItems,
+						offset: search.page * search.numItems - search.numItems,
+						filter: search.filter,
+					}).queryKey,
+				}),
+			]);
+			toast.success("Product restored successfully");
+		},
+		onError: (error) => toast.error(error.message),
+	});
 
 	return (
 		<div>
@@ -191,19 +223,17 @@ function RouteComponent() {
 
 												{item.status === "archived" && (
 													<Menu.Item
-													// isDisabled={isArchiving}
-													// onAction={() =>
-													// 	archiveProduct({ productId: item._id })
-													// }
+														isDisabled={isRestoring}
+														onAction={() => restoreProduct(item.id)}
 													>
-														{/* {isArchiving ? <Loader /> : <IconRestore />} */}
+														{isRestoring ? <Loader /> : <IconRestore />}
 														<Menu.Label>Restore Product</Menu.Label>
 													</Menu.Item>
 												)}
 												{item.status === "active" && (
 													<Menu.Item
 														isDanger
-														// onAction={() => setSelectedProduct(item)}
+														onAction={() => setSelectedProduct(item)}
 													>
 														<IconArchive />
 														<Menu.Label>Archive Product</Menu.Label>
@@ -246,6 +276,14 @@ function RouteComponent() {
 					</div>
 				)}
 			</div>
+			<ArchiveProductModal
+				product={selectedProduct}
+				onOpenChange={(isOpen) => {
+					if (!isOpen) {
+						setSelectedProduct(null);
+					}
+				}}
+			/>
 		</div>
 	);
 }

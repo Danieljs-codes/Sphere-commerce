@@ -1,14 +1,21 @@
 import { ProductBasicsStep } from "@components/admin/product-basics-step";
 import ProductVariantsPublishStep from "@components/admin/product-variants-publish-step";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { $createProduct } from "@server/products";
 import { IconCircleChevronLeftFilled } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button, buttonStyles } from "@ui/button";
 import { Link } from "@ui/link";
 import { Loader } from "@ui/loader";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { getExistingCategoriesQueryOptions } from "@/lib/query-options";
+import { toast } from "sonner";
+import {
+	getExistingCategoriesQueryOptions,
+	getOverviewStatsQueryOptions,
+	getProductPageQueryOptions,
+	getProductStatsQueryOptions,
+} from "@/lib/query-options";
 import { type ProductFormData, productFormSchema } from "@/lib/schema";
 
 export const Route = createFileRoute("/admin/products/new")({
@@ -22,23 +29,62 @@ export const Route = createFileRoute("/admin/products/new")({
 });
 
 function RouteComponent() {
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const queryClient = useQueryClient();
 	const navigate = Route.useNavigate();
 	const form = useForm<ProductFormData>({
 		resolver: zodResolver(productFormSchema),
 		defaultValues: {
 			name: "",
-			price: 0,
+			price: 1000,
 			description: "",
 			tags: [],
 			images: [],
-			status: "draft" as const,
-			stockCount: 0,
+			status: "active",
+			stockCount: 50,
 			categoryId: "",
 			metaTitle: "",
 			metaDescription: "",
 		},
 		mode: "onChange",
+	});
+
+	const { mutate: createProduct, isPending } = useMutation({
+		mutationKey: ["dashboard", "product"],
+		mutationFn: async (data: ProductFormData) => {
+			const formData = new FormData();
+			Object.entries(data).forEach(([key, value]) => {
+				if (key === "images" && Array.isArray(value)) {
+					(value as File[]).forEach((file) => {
+						formData.append("images", file);
+					});
+				} else if (Array.isArray(value)) {
+					formData.append(key, JSON.stringify(value));
+				} else {
+					formData.append(key, value as any);
+				}
+			});
+
+			return await $createProduct({ data: formData });
+		},
+		onSuccess: async (data) => {
+			toast.success(data.message);
+			await Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: getProductStatsQueryOptions().queryKey,
+				}),
+				queryClient.invalidateQueries({
+					queryKey: getProductPageQueryOptions({ numItems: 10, offset: 0 })
+						.queryKey,
+				}),
+				queryClient.invalidateQueries({
+					queryKey: getOverviewStatsQueryOptions().queryKey,
+				}),
+			]);
+			navigate({
+				to: "/admin/products",
+			});
+		},
+		onError: (error) => toast.error(error.message),
 	});
 
 	return (
@@ -71,55 +117,20 @@ function RouteComponent() {
 						</Button>
 						<Button
 							type="button"
-							isPending={isSubmitting}
-							// onPress={async () => {
-							// 	const isValid = await form.trigger();
-							// 	if (!isValid) {
-							// 		/* toast + return */
-							// 	}
+							isPending={isPending}
+							onPress={async () => {
+								const isValid = await form.trigger();
+								if (!isValid) {
+									/* toast + return */
+									return;
+								}
 
-							// 	setIsSubmitting(true);
-							// 	try {
-							// 		const values = form.getValues();
-
-							// 		// Upload images sequentially (avoids flicker and rate spikes)
-							// 		const storageIds: string[] = [];
-							// 		for (const file of values.images) {
-							// 			// const postUrl = await generateUploadUrl({});
-							// 			const res = await fetch(postUrl, {
-							// 				method: "POST",
-							// 				headers: { "Content-Type": file.type },
-							// 				body: file,
-							// 			});
-							// 			const json = (await res.json()) as {
-							// 				storageId: string;
-							// 			};
-							// 			storageIds.push(json.storageId);
-							// 		}
-
-							// 		const priceKobo = Math.round(Number(values.price) * 100);
-
-							// 		await createProduct({
-							// 			name: values.name,
-							// 			price: priceKobo,
-							// 			description: values.description,
-							// 			categoryId:
-							// 				(values.categoryId as Id<"categories">) || undefined,
-							// 			tags: values.tags || [],
-							// 			images: storageIds as Array<Id<"_storage">>,
-							// 			stockCount: Number(values.stockCount) || 0,
-							// 			status: values.status,
-							// 			publishAtMs: values.publishAt,
-							// 			metaTitle: values.metaTitle || undefined,
-							// 			metaDescription: values.metaDescription || undefined,
-							// 		});
-							// 	} finally {
-							// 		setIsSubmitting(false);
-							// 	}
-							// }}
+								// Use FormData for file upload
+								createProduct(form.getValues());
+							}}
 						>
-							{isSubmitting && <Loader />}
-							{isSubmitting ? "Creating product..." : "Create product"}
+							{isPending && <Loader />}
+							{isPending ? "Creating product..." : "Create product"}
 						</Button>
 					</div>
 				</div>

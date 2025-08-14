@@ -139,7 +139,7 @@ export const product = sqliteTable(
 			.$type<
 				{
 					url: string;
-					hash: string;
+					blurhash: string;
 				}[]
 			>()
 			.notNull(),
@@ -338,3 +338,4 @@ export const scheduledTasks = sqliteTable(
 );
 
 export type User = InferSelectModel<typeof user>;
+export type Product = InferSelectModel<typeof product>;
