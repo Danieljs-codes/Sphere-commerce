@@ -76,12 +76,13 @@ function RouteComponent() {
 		}),
 	);
 
-	const { mutate: restoreProduct, isPending: isRestoring } = useMutation({
+	const { mutateAsync: restoreProduct, isPending: isRestoring } = useMutation({
 		mutationFn: async (productId: string) => {
 			return $restoreProduct({
 				data: { productId },
 			});
 		},
+		throwOnError: true,
 		onSuccess: async () => {
 			await Promise.all([
 				queryClient.invalidateQueries({
@@ -95,9 +96,7 @@ function RouteComponent() {
 					}).queryKey,
 				}),
 			]);
-			toast.success("Product restored successfully");
 		},
-		onError: (error) => toast.error(error.message),
 	});
 
 	return (
@@ -224,7 +223,13 @@ function RouteComponent() {
 												{item.status === "archived" && (
 													<Menu.Item
 														isDisabled={isRestoring}
-														onAction={() => restoreProduct(item.id)}
+														onAction={() =>
+															toast.promise(restoreProduct(item.id), {
+																loading: "Restoring product...",
+																success: "Product restored successfully",
+																error: "Failed to restore product",
+															})
+														}
 													>
 														{isRestoring ? <Loader /> : <IconRestore />}
 														<Menu.Label>Restore Product</Menu.Label>
