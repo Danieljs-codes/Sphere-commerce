@@ -22,9 +22,9 @@
 		"noUncheckedSideEffectImports": true,
 		"baseUrl": ".",
 		"paths": {
-			"@components/*": ["./src/components/*"],
 			"@server/*": ["./src/server/*"],
 			"@ui/*": ["./src/components/ui/*"],
+			"@components/*": ["./src/components/*"],
 			"@/*": ["./src/*"]
 		}
 	}

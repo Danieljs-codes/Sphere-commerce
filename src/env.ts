@@ -5,7 +5,9 @@ export const env = createEnv({
 	server: {
 		SERVER_URL: z.url().optional(),
 		TURSO_CONNECTION_URL: z.url().min(1),
-		TURSO_AUTH_TOKEN: z.url().min(1),
+		TURSO_AUTH_TOKEN: z.string().min(1),
+		BETTER_AUTH_SECRET: z.string().min(1),
+		BETTER_AUTH_URL: z.url().min(1),
 	},
 
 	/**
@@ -26,6 +28,8 @@ export const env = createEnv({
 		SERVER_URL: process.env.SERVER_URL,
 		TURSO_CONNECTION_URL: process.env.TURSO_CONNECTION_URL,
 		TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 	},
 
 	/**

@@ -8,6 +8,8 @@ import {
 	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Toast } from "@ui/toast";
+import { ThemeProvider } from "next-themes";
 import nProgress from "nprogress";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -48,6 +50,39 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<head
+				lang="en"
+				className="font-sans antialiased"
+				suppressHydrationWarning
+			>
+				<HeadContent />
+			</head>
+			<body>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<InnerComponent>{children}</InnerComponent>
+					<Toast />
+				</ThemeProvider>
+				<TanstackDevtools
+					config={{
+						position: "bottom-left",
+					}}
+					plugins={[
+						{
+							name: "Tanstack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+						TanStackQueryDevtools,
+					]}
+				/>
+				<Scripts />
+			</body>
+		</html>
+	);
+}
+
+function InnerComponent({ children }: { children: React.ReactNode }) {
 	const router = useRouterState({
 		select: (state) => ({
 			pathname: state.location.pathname,
@@ -84,32 +119,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			nProgress.done();
 		}
 	}, [router.pathname, router.status]);
-
-	return (
-		<html lang="en">
-			<head
-				lang="en"
-				className="font-sans antialiased"
-				suppressHydrationWarning
-			>
-				<HeadContent />
-			</head>
-			<body>
-				{children}
-				<TanstackDevtools
-					config={{
-						position: "bottom-left",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-						TanStackQueryDevtools,
-					]}
-				/>
-				<Scripts />
-			</body>
-		</html>
-	);
+	return <>{children}</>;
 }

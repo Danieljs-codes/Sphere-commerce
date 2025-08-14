@@ -1,7 +1,6 @@
 import { createRouter as createTanstackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { Toast } from "@ui/toast";
-import { ThemeProvider } from "next-themes";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -17,12 +16,10 @@ export const createRouter = () => {
 		defaultPreloadStaleTime: 0,
 		Wrap: (props: { children: React.ReactNode }) => {
 			return (
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<TanstackQuery.Provider {...rqContext}>
-						{props.children}
-						<Toast />
-					</TanstackQuery.Provider>
-				</ThemeProvider>
+				<TanstackQuery.Provider {...rqContext}>
+					{props.children}
+					<Toast />
+				</TanstackQuery.Provider>
 			);
 		},
 	});
