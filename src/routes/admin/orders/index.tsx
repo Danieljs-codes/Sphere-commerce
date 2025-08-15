@@ -3,6 +3,7 @@ import { IconPackageDelivered } from "@components/icons/package-delivered";
 import { IconPackageMoving } from "@components/icons/package-moving";
 import { IconPackageProcess } from "@components/icons/package-process";
 import { createFileRoute } from "@tanstack/react-router";
+import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
 import { Label } from "@ui/field";
 import { Heading } from "@ui/heading";
@@ -150,8 +151,21 @@ function RouteComponent() {
 										{formatMoney(order.total)}
 									</Table.Cell>
 									<Table.Cell>
-										{order.status.charAt(0).toUpperCase() +
-											order.status.slice(1)}
+										<Badge
+											className="capitalize"
+											intent={
+												order.status === "delivered"
+													? "success"
+													: order.status === "shipped"
+														? "info"
+														: "secondary"
+											}
+										>
+											{order.status === "processing" && <IconPackageProcess />}
+											{order.status === "shipped" && <IconPackageMoving />}
+											{order.status === "delivered" && <IconPackageDelivered />}
+											{order.status.toLowerCase()}
+										</Badge>
 									</Table.Cell>
 									<Table.Cell>
 										{format(new Date(order.createdAt), "do MMM, yyyy, h:mm a")}
@@ -175,7 +189,8 @@ function RouteComponent() {
 									</Table.Cell>
 									<Table.Cell>
 										<Link
-											to="."
+											to="/admin/orders/$id"
+											params={{ id: order.id }}
 											className="font-medium cursor-pointer text-primary-subtle-fg hover:underline"
 										>
 											View Details

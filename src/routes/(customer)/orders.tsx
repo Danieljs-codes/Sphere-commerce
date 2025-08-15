@@ -8,7 +8,7 @@ export const Route = createFileRoute("/(customer)/orders")({
 function RouteComponent() {
 	return (
 		<div>
-			<div className="mb-6">
+			<div>
 				<Heading>Orders</Heading>
 			</div>
 		</div>
