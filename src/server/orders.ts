@@ -1,4 +1,4 @@
-import { authMiddleware } from "@server/auth";
+import { adminMiddleware, authMiddleware } from "@server/auth";
 import { db } from "@server/db";
 import { order, orderItem, user } from "@server/db/schema";
 import { createServerFn } from "@tanstack/react-start";
@@ -14,7 +14,7 @@ export const $getOrders = createServerFn()
 			status: z.enum(["processing", "shipped", "delivered"]).optional(),
 		}),
 	)
-	.handler(async ({ context, data }) => {
+	.handler(async ({ data }) => {
 		const offset = (data.page - 1) * data.limit;
 
 		// Single query to get counts
@@ -98,4 +98,71 @@ export const $getOrders = createServerFn()
 				totalItems: counts.totalMatchingOrders,
 			},
 		};
+	});
+
+// Returns the order details, all order items, and user information
+export const $getOrder = createServerFn()
+	.validator(
+		z.object({
+			id: z.string().min(1, "Order ID is required"),
+		}),
+	)
+	.middleware([adminMiddleware])
+	.handler(async ({ data }) => {
+		// Fetch the order with user info
+		const orderWithItems = await db
+			.select({
+				orderId: order.id,
+				orderNumber: order.orderNumber,
+				subtotal: order.subtotal,
+				discountAmount: order.discountAmount,
+				shippingFee: order.shippingFee,
+				taxAmount: order.taxAmount,
+				total: order.total,
+				discountId: order.discountId,
+				discountCode: order.discountCode,
+				status: order.status,
+				shippingAddress: order.shippingAddress,
+				paymentReference: order.paymentReference,
+				createdAt: order.createdAt,
+				updatedAt: order.updatedAt,
+				shippedAt: order.shippedAt,
+				deliveredAt: order.deliveredAt,
+				userId: user.id,
+				userName: user.name,
+				userEmail: user.email,
+
+				itemId: orderItem.id,
+				productId: orderItem.productId,
+				productName: orderItem.productName,
+				quantity: orderItem.quantity,
+				itemStatus: orderItem.status,
+				pricePerItem: orderItem.pricePerItem,
+				totalPrice: orderItem.totalPrice,
+			})
+			.from(order)
+			.innerJoin(user, eq(order.userId, user.id))
+			.leftJoin(orderItem, eq(orderItem.orderId, order.id))
+			.where(eq(order.id, data.id));
+
+		if (!orderWithItems.length) {
+			throw new Error("Order not found");
+		}
+
+		const result = {
+			...orderWithItems[0], // order + user details
+			items: orderWithItems
+				.filter((row) => row.itemId !== null)
+				.map((row) => ({
+					id: row.itemId,
+					productId: row.productId,
+					productName: row.productName,
+					quantity: row.quantity,
+					status: row.itemStatus,
+					pricePerItem: row.pricePerItem,
+					totalPrice: row.totalPrice,
+				})),
+		};
+
+		return result;
 	});

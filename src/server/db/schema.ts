@@ -261,7 +261,14 @@ export const order = sqliteTable(
 		status: text("status", {
 			enum: ["processing", "shipped", "delivered"],
 		}).notNull(),
-		shippingAddress: text("shipping_address", { mode: "json" }).notNull(),
+		shippingAddress: text("shipping_address", { mode: "json" })
+			.$type<{
+				address: string;
+				city: string;
+				zipCode: string;
+				phoneNumber: string;
+			}>()
+			.notNull(),
 		paymentReference: text("payment_reference"),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
@@ -278,6 +285,8 @@ export const order = sqliteTable(
 		index("orders_by_status").on(t.status),
 		uniqueIndex("orders_by_order_number").on(t.orderNumber),
 		index("orders_by_created_at").on(t.createdAt),
+		index("orders_by_discount").on(t.discountId),
+		index("orders_by_payment_reference").on(t.paymentReference),
 	],
 );
 

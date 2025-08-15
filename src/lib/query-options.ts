@@ -1,6 +1,6 @@
 import { $getSignedInUser } from "@server/auth";
 import { $getExistingCategories } from "@server/categories";
-import { $getOrders } from "@server/orders";
+import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
 import { $getProductPage, $getProductStats } from "@server/products";
 import { queryOptions } from "@tanstack/react-query";
@@ -103,6 +103,16 @@ export const getOrdersQueryOptions = ({
 					status,
 				},
 			});
+
+			return data;
+		},
+	});
+
+export const getOrderQueryOptions = (id: string) =>
+	queryOptions({
+		queryKey: ["dashboard", "order", id],
+		queryFn: async () => {
+			const data = await $getOrder({ data: { id } });
 
 			return data;
 		},

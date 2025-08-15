@@ -172,7 +172,22 @@ function RouteComponent() {
 										</div>
 									</Table.Cell>
 									<Table.Cell className="whitespace-nowrap">
-										{item.name}
+										<div className="flex items-center gap-2">
+											<MetricCard
+												classNames={{
+													card: "size-12 flex",
+													content:
+														"p-0 overflow-hidden flex-1 flex isolate relative",
+												}}
+											>
+												<img
+													src={item.images[0].url}
+													alt={item.name}
+													className="size-full object-cover object-center"
+												/>
+											</MetricCard>
+											{item.name}
+										</div>
 									</Table.Cell>
 									<Table.Cell className="font-mono tabular-nums font-medium">
 										{formatMoney(item.price)}
