@@ -27,3 +27,9 @@ export const formatMoney = (amount: number) => {
 		currency: "NGN",
 	}).format(amount / 100);
 };
+
+export function wait(ms: number) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}

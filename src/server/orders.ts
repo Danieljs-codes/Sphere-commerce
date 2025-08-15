@@ -1,6 +1,6 @@
 import { adminMiddleware, authMiddleware } from "@server/auth";
 import { db } from "@server/db";
-import { order, orderItem, user } from "@server/db/schema";
+import { order, orderItem, product, user } from "@server/db/schema";
 import { createServerFn } from "@tanstack/react-start";
 import { desc, eq, sql } from "drizzle-orm";
 import z from "zod/v4";
@@ -139,29 +139,64 @@ export const $getOrder = createServerFn()
 				itemStatus: orderItem.status,
 				pricePerItem: orderItem.pricePerItem,
 				totalPrice: orderItem.totalPrice,
+				productImages: product.images,
 			})
 			.from(order)
 			.innerJoin(user, eq(order.userId, user.id))
 			.leftJoin(orderItem, eq(orderItem.orderId, order.id))
+			.leftJoin(product, eq(orderItem.productId, product.id))
 			.where(eq(order.id, data.id));
 
 		if (!orderWithItems.length) {
 			throw new Error("Order not found");
 		}
 
+		const head = orderWithItems[0];
+
+		const isItemRow = (
+			row: (typeof orderWithItems)[number],
+		): row is (typeof orderWithItems)[number] & {
+			itemId: string;
+			productId: string;
+			productName: string;
+			quantity: number;
+			itemStatus: "processing" | "shipped" | "delivered";
+			pricePerItem: number;
+			totalPrice: number;
+		} => row.itemId !== null;
+
 		const result = {
-			...orderWithItems[0], // order + user details
-			items: orderWithItems
-				.filter((row) => row.itemId !== null)
-				.map((row) => ({
-					id: row.itemId,
-					productId: row.productId,
-					productName: row.productName,
-					quantity: row.quantity,
-					status: row.itemStatus,
-					pricePerItem: row.pricePerItem,
-					totalPrice: row.totalPrice,
-				})),
+			orderId: head.orderId,
+			orderNumber: head.orderNumber,
+			subtotal: head.subtotal,
+			discountAmount: head.discountAmount,
+			shippingFee: head.shippingFee,
+			taxAmount: head.taxAmount,
+			total: head.total,
+			discountId: head.discountId,
+			discountCode: head.discountCode,
+			status: head.status,
+			shippingAddress: head.shippingAddress,
+			paymentReference: head.paymentReference,
+			createdAt: head.createdAt,
+			updatedAt: head.updatedAt,
+			shippedAt: head.shippedAt,
+			deliveredAt: head.deliveredAt,
+			userId: head.userId,
+			userName: head.userName,
+			userEmail: head.userEmail,
+			items: orderWithItems.filter(isItemRow).map((row) => ({
+				id: row.itemId,
+				productId: row.productId,
+				productName: row.productName,
+				// Convenience fields expected by UI
+				name: row.productName,
+				images: row.productImages! ?? [],
+				quantity: row.quantity,
+				status: row.itemStatus,
+				pricePerItem: row.pricePerItem,
+				totalPrice: row.totalPrice,
+			})),
 		};
 
 		return result;
