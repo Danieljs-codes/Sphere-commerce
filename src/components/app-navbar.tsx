@@ -7,9 +7,11 @@ import {
 	IconShoppingBag,
 } from "@intentui/icons";
 import { $signOut } from "@server/auth";
+import type { Product } from "@server/db/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Blurhash } from "react-blurhash";
 import { toast } from "sonner";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
@@ -28,6 +30,7 @@ import {
 } from "@/components/ui/navbar";
 import { Separator } from "@/components/ui/separator";
 import { useDebouncedValue } from "@/hooks/use-debounce-value";
+import { useHotkeys } from "@/hooks/use-hot-keys";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import {
 	getSignedUserQueryOptions,
@@ -216,10 +219,10 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 
 					{/* Main shop landing */}
 					<NavbarItem
-						to="/products"
-						isCurrent={pathname.toLowerCase() === "/products"}
+						to="/store"
+						isCurrent={pathname.toLowerCase().includes("/store")}
 					>
-						Shop
+						Store
 					</NavbarItem>
 
 					{/* Helpful top-level pages */}
@@ -232,8 +235,11 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 
 					{/* Quick category shortcuts (adjust or expand as needed) */}
 					{categories.slice(0, 4).map((c) => (
-						// @ts-expect-error - To be fixed
-						<NavbarItem key={c.id} to={`/products?category=${toSlug(c.label)}`}>
+						<NavbarItem
+							key={c.id}
+							// @ts-expect-error - To be fixed
+							to={`/ products?category=${toSlug(c.label)}`}
+						>
 							{c.label}
 						</NavbarItem>
 					))}
@@ -309,6 +315,15 @@ function SearchCommandMenu() {
 		});
 	}, [debouncedSearch, navigate]);
 
+	useHotkeys([
+		["ctrl + K", () => setIsOpen(true)],
+		["ctrl + S", () => setIsOpen(true)],
+	]);
+
+	useEffect(() => {
+		console.log(isOpen);
+	}, [isOpen]);
+
 	return (
 		<>
 			<Button
@@ -347,11 +362,7 @@ function SearchCommandMenu() {
 										content: "p-0 overflow-hidden flex-1 flex isolate relative",
 									}}
 								>
-									<img
-										src={product.images[0].url}
-										alt={product.name}
-										className="size-full object-cover object-center"
-									/>
+									<ProductImage product={product} />
 								</MetricCard>
 								<div className="flex justify-between items-center">
 									<CommandMenu.Label className="text-muted-fg truncate max-w-[20ch] md:max-w-[50ch]">
@@ -370,26 +381,22 @@ function SearchCommandMenu() {
 	);
 }
 
-const users = [
-	{
-		id: 1,
-		name: "Barbara Kirlin Sr.",
-		image_url: "https://i.pravatar.cc/150?img=1",
-	},
-	{
-		id: 2,
-		name: "Rosemarie Koch",
-		image_url: "https://i.pravatar.cc/150?img=2",
-	},
-	{
-		id: 3,
-		name: "Mrs. Reva Heaney Jr.",
-		image_url: "https://i.pravatar.cc/150?img=3",
-	},
-	{ id: 5, name: "Bria Ziemann", image_url: "https://i.pravatar.cc/150?img=5" },
-	{
-		id: 6,
-		name: "Heloise Borer Sr.",
-		image_url: "https://i.pravatar.cc/150?img=6",
-	},
-];
+function ProductImage({ product }: { product: Product }) {
+	const [imageLoaded, setImageLoaded] = useState(false);
+	return (
+		<>
+			<img
+				src={product.images[0].url}
+				alt={product.name}
+				className="size-full object-cover object-center"
+				onLoad={() => setImageLoaded(true)}
+			/>
+			{!imageLoaded && (
+				<Blurhash
+					hash={product.images[0].blurhash}
+					className="size-full object-cover object-center"
+				/>
+			)}
+		</>
+	);
+}
