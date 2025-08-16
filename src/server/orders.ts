@@ -136,7 +136,6 @@ export const $getOrder = createServerFn()
 				productId: orderItem.productId,
 				productName: orderItem.productName,
 				quantity: orderItem.quantity,
-				itemStatus: orderItem.status,
 				pricePerItem: orderItem.pricePerItem,
 				totalPrice: orderItem.totalPrice,
 				productImages: product.images,
@@ -200,4 +199,42 @@ export const $getOrder = createServerFn()
 		};
 
 		return result;
+	});
+
+export const $markAsShipped = createServerFn()
+	.middleware([adminMiddleware])
+	.validator(
+		z.object({
+			id: z.string().min(1, "Order ID is required"),
+		}),
+	)
+	.handler(async ({ data }) => {
+		await db
+			.update(order)
+			.set({ status: "shipped" })
+			.where(eq(order.id, data.id));
+
+		return {
+			success: true,
+			message: "Order marked as shipped successfully",
+		};
+	});
+
+export const $markAsDelivered = createServerFn()
+	.middleware([adminMiddleware])
+	.validator(
+		z.object({
+			id: z.string().min(1, "Order ID is required"),
+		}),
+	)
+	.handler(async ({ data }) => {
+		await db
+			.update(order)
+			.set({ status: "delivered" })
+			.where(eq(order.id, data.id));
+
+		return {
+			success: true,
+			message: "Order marked as delivered successfully",
+		};
 	});

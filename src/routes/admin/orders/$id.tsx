@@ -1,19 +1,28 @@
-import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
-import { getOrderQueryOptions } from "@/lib/query-options";
-import { formatMoney, wait } from "@/lib/utils";
 import { MetricCard } from "@components/admin/metric-card";
 import { IconPackageDelivered } from "@components/icons/package-delivered";
 import { IconPackageMoving } from "@components/icons/package-moving";
 import { IconPackageProcess } from "@components/icons/package-process";
+import { IconDotsVertical } from "@intentui/icons";
+import { $markAsDelivered, $markAsShipped } from "@server/orders";
 import { IconCircleChevronLeftFilled } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@ui/badge";
-import { buttonStyles } from "@ui/button";
+import { Button, buttonStyles } from "@ui/button";
 import { Link } from "@ui/link";
+import { Loader } from "@ui/loader";
+import { Menu } from "@ui/menu";
 import { SearchField } from "@ui/search-field";
 import { Table } from "@ui/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Blurhash } from "react-blurhash";
+import { toast } from "sonner";
+import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
+import {
+	getOrderQueryOptions,
+	getOrdersQueryOptions,
+} from "@/lib/query-options";
+import { formatMoney } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/orders/$id")({
 	loader: async ({ params, context }) => {
@@ -30,14 +39,66 @@ export const Route = createFileRoute("/admin/orders/$id")({
 });
 
 function RouteComponent() {
+	const queryClient = useQueryClient();
 	const [q, setQ] = useState("");
 	const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 	const params = Route.useParams();
 	const { data } = useSuspenseQueryDeferred(getOrderQueryOptions(params.id));
 
+	const filteredItems = useMemo(() => {
+		const term = q.trim().toLowerCase();
+		if (!term || term.length === 0) return data.items;
+		return data.items.filter((it) => {
+			const name = it.name?.toLowerCase() ?? "";
+			const productName = it.productName?.toLowerCase() ?? "";
+			const productId = it.productId?.toLowerCase() ?? "";
+			return (
+				name.includes(term) ||
+				productName.includes(term) ||
+				productId.includes(term)
+			);
+		});
+	}, [data.items, q]);
+
+	const { mutateAsync: markAsShipped, isPending: isMarkingAsShipped } =
+		useMutation({
+			mutationFn: (id: string) => $markAsShipped({ data: { id } }),
+			mutationKey: ["markAsShipped", params.id],
+			onSuccess: async () => {
+				await Promise.all([
+					queryClient.invalidateQueries({
+						queryKey: getOrderQueryOptions(params.id).queryKey,
+					}),
+					queryClient.invalidateQueries({
+						queryKey: getOrdersQueryOptions({ page: 1, limit: 10 }).queryKey,
+					}),
+				]);
+			},
+			throwOnError: true,
+		});
+
+	const { mutateAsync: markAsDelivered, isPending: isMarkingAsDelivered } =
+		useMutation({
+			mutationFn: async (id: string) => {
+				return await $markAsDelivered({ data: { id } });
+			},
+			mutationKey: ["markAsDelivered", params.id],
+			onSuccess: async () => {
+				await Promise.all([
+					queryClient.invalidateQueries({
+						queryKey: getOrderQueryOptions(params.id).queryKey,
+					}),
+					queryClient.invalidateQueries({
+						queryKey: getOrdersQueryOptions({ page: 1, limit: 10 }).queryKey,
+					}),
+				]);
+			},
+			throwOnError: true,
+		});
+
 	return (
 		<div>
-			<div className="mb-8">
+			<div className="mb-8 flex items-center justify-between">
 				<Link
 					to="/admin/orders"
 					className={buttonStyles({ intent: "outline" })}
@@ -45,6 +106,73 @@ function RouteComponent() {
 					<IconCircleChevronLeftFilled data-slot="icon" />
 					Back to Orders
 				</Link>
+				{data.status !== "delivered" && (
+					<Menu>
+						<Button size="sq-sm" intent="outline">
+							<IconDotsVertical />
+						</Button>
+						<Menu.Content
+							popover={{ placement: "bottom right" }}
+							dependencies={[isMarkingAsDelivered, isMarkingAsShipped]}
+						>
+							{data.status === "processing" && (
+								<>
+									<Menu.Item
+										isDisabled={isMarkingAsShipped}
+										onAction={() => {
+											toast.promise(markAsShipped(params.id), {
+												loading: "Marking as shipped...",
+												success: "Order marked as shipped successfully",
+												error: "Failed to mark order as shipped",
+											});
+										}}
+									>
+										{isMarkingAsShipped ? <Loader /> : <IconPackageMoving />}
+										<Menu.Label>Ship Order</Menu.Label>
+									</Menu.Item>
+									<Menu.Item
+										isDisabled={isMarkingAsDelivered}
+										onAction={() => {
+											toast.promise(markAsDelivered(params.id), {
+												loading: "Marking as delivered...",
+												success: "Order marked as delivered successfully",
+												error: "Failed to mark order as delivered",
+											});
+										}}
+									>
+										{isMarkingAsDelivered ? (
+											<Loader />
+										) : (
+											<IconPackageDelivered />
+										)}
+										<Menu.Label>Deliver Order</Menu.Label>
+									</Menu.Item>
+								</>
+							)}
+							{data.status === "shipped" && (
+								<Menu.Item
+									isDisabled={isMarkingAsDelivered}
+									onAction={() => {
+										toast.promise(markAsDelivered(params.id), {
+											loading: "Marking as delivered...",
+											success: "Order marked as delivered successfully",
+											error: "Failed to mark order as delivered",
+										});
+									}}
+								>
+									{isMarkingAsDelivered ? <Loader /> : <IconPackageDelivered />}
+									<Menu.Label>Deliver Order</Menu.Label>
+								</Menu.Item>
+							)}
+						</Menu.Content>
+					</Menu>
+				)}
+				{data.status === "delivered" && (
+					<Badge intent="success" className="capitalize">
+						{data.status === "delivered" && <IconPackageDelivered />}
+						{data.status.toLowerCase()}
+					</Badge>
+				)}
 			</div>
 			<div className="grid grid-cols-3 mb-6">
 				<MetricCard
@@ -100,7 +228,7 @@ function RouteComponent() {
 						<Table.Column>Price</Table.Column>
 						<Table.Column>Total</Table.Column>
 					</Table.Header>
-					<Table.Body items={data.items} dependencies={[imageLoaded]}>
+					<Table.Body items={filteredItems} dependencies={[imageLoaded, q]}>
 						{(item) => (
 							<Table.Row id={item.id}>
 								<Table.Cell>
@@ -125,10 +253,7 @@ function RouteComponent() {
 												alt={item.name}
 												className="size-full object-cover object-center"
 												loading="lazy"
-												onLoad={async () => {
-													console.log("Here Before");
-													await wait(3000);
-													console.log("Here After");
+												onLoad={() => {
 													setImageLoaded((prev) => ({
 														...prev,
 														[item.id]: true,
@@ -146,8 +271,13 @@ function RouteComponent() {
 									</div>
 								</Table.Cell>
 								<Table.Cell>{item.quantity}</Table.Cell>
-								<Table.Cell>{formatMoney(item.pricePerItem)}</Table.Cell>
-								<Table.Cell>{formatMoney(item.totalPrice)}</Table.Cell>
+								<Table.Cell className="tabular-nums font-mono font-medium text-fg">
+									{formatMoney(item.pricePerItem)}
+								</Table.Cell>
+
+								<Table.Cell className="tabular-nums font-mono font-medium text-fg">
+									{formatMoney(item.totalPrice)}
+								</Table.Cell>
 							</Table.Row>
 						)}
 					</Table.Body>

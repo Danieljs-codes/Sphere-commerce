@@ -304,9 +304,6 @@ export const orderItem = sqliteTable(
 			.references(() => product.id)
 			.notNull(),
 		quantity: integer("quantity").notNull(),
-		status: text("status", {
-			enum: ["processing", "shipped", "delivered"],
-		}).notNull(),
 		productName: text("product_name").notNull(),
 		pricePerItem: integer("price_per_item").notNull(),
 		totalPrice: integer("total_price").notNull(),
