@@ -1,17 +1,15 @@
+import { MetricCard } from "@components/admin/metric-card";
 import {
-	IconCube,
 	IconDashboard,
 	IconHeart,
-	IconHome,
 	IconLogout,
-	IconNotes,
 	IconSearch,
 	IconShoppingBag,
 } from "@intentui/icons";
 import { $signOut } from "@server/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
@@ -29,8 +27,13 @@ import {
 	NavbarTrigger,
 } from "@/components/ui/navbar";
 import { Separator } from "@/components/ui/separator";
-import { getSignedUserQueryOptions } from "@/lib/query-options";
-import { cn, getNameInitials } from "@/lib/utils";
+import { useDebouncedValue } from "@/hooks/use-debounce-value";
+import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
+import {
+	getSignedUserQueryOptions,
+	searchProductsQueryOptions,
+} from "@/lib/query-options";
+import { cn, formatMoney, getNameInitials } from "@/lib/utils";
 import type { User } from "@/types";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
@@ -292,7 +295,20 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 }
 
 function SearchCommandMenu() {
+	const navigate = useNavigate({ from: "/" });
 	const [isOpen, setIsOpen] = useState(false);
+	const [search, setSearch] = useState("");
+	const [debouncedSearch] = useDebouncedValue(search, 300);
+	const { data, isSuspending } = useSuspenseQueryDeferred(
+		searchProductsQueryOptions(debouncedSearch),
+	);
+
+	useEffect(() => {
+		navigate({
+			search: (prev) => ({ ...prev, search: debouncedSearch }),
+		});
+	}, [debouncedSearch, navigate]);
+
 	return (
 		<>
 			<Button
@@ -309,32 +325,42 @@ function SearchCommandMenu() {
 				isOpen={isOpen}
 				onOpenChange={setIsOpen}
 				isBlurred
+				inputValue={search}
+				onInputChange={(value) => setSearch(value)}
+				isPending={isSuspending}
 			>
 				<CommandMenu.Search
 					className="inset-ring-border mb-(--gutter) sm:inset-ring sm:rounded-(--cmd-radius) sm:bg-bg"
 					placeholder="Quick search products..."
 				/>
 				<CommandMenu.List className="inset-ring-border rounded-(--cmd-radius) border-t bg-bg sm:inset-ring sm:border-t-0">
-					<CommandMenu.Section title="Pages">
-						<CommandMenu.Item textValue="Home" href="#">
-							<IconHome />
-							<CommandMenu.Label>Home</CommandMenu.Label>
-						</CommandMenu.Item>
-						<CommandMenu.Item textValue="Docs" href="#">
-							<IconNotes />
-							<CommandMenu.Label>Docs</CommandMenu.Label>
-							<CommandMenu.Keyboard keys="⌘k" />
-						</CommandMenu.Item>
-						<CommandMenu.Item textValue="Components" href="#">
-							<IconCube />
-							<CommandMenu.Label>Components</CommandMenu.Label>
-						</CommandMenu.Item>
-					</CommandMenu.Section>
-					<CommandMenu.Section title="Team">
-						{users.map((user) => (
-							<CommandMenu.Item textValue={user.name} key={user.id}>
-								<Avatar src={user.image_url} />
-								<CommandMenu.Label>{user.name}</CommandMenu.Label>
+					<CommandMenu.Section title="Products">
+						{data?.map((product) => (
+							<CommandMenu.Item
+								textValue={product.name}
+								key={product.id}
+								className="gap-2"
+							>
+								<MetricCard
+									classNames={{
+										card: "size-10 flex",
+										content: "p-0 overflow-hidden flex-1 flex isolate relative",
+									}}
+								>
+									<img
+										src={product.images[0].url}
+										alt={product.name}
+										className="size-full object-cover object-center"
+									/>
+								</MetricCard>
+								<div className="flex justify-between items-center">
+									<CommandMenu.Label className="text-muted-fg truncate max-w-[20ch] md:max-w-[50ch]">
+										{product.name}
+									</CommandMenu.Label>
+									<p className="text-sm font-medium tabular-nums">
+										{formatMoney(product.price)}
+									</p>
+								</div>
 							</CommandMenu.Item>
 						))}
 					</CommandMenu.Section>

@@ -3,6 +3,7 @@ import {
 	$getExistingCategories,
 	$getExistingCategoriesWithPagination,
 } from "@server/categories";
+import { $searchProducts } from "@server/customers/search";
 import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
 import { $getProductPage, $getProductStats } from "@server/products";
@@ -136,5 +137,22 @@ export const getExistingCategoriesWithPaginationQueryOptions = ({
 			});
 
 			return data;
+		},
+	});
+
+export const searchProductsQueryOptions = (search: string) =>
+	queryOptions({
+		queryKey: ["dashboard", "search-products", search],
+		queryFn: async () => {
+			if (search.length > 0) {
+				const data = await $searchProducts({
+					data: {
+						search,
+					},
+				});
+				return data;
+			} else {
+				return null;
+			}
 		},
 	});
