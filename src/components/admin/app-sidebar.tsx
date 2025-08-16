@@ -2,14 +2,9 @@ import {
 	IconBuildingFill,
 	IconChevronsY,
 	IconCircleHalf,
-	IconCircleQuestionmarkFill,
 	IconDashboardFill,
-	IconDotsHorizontal,
-	IconMessageFill,
-	IconNotesFill,
 	IconSettingsFill,
 	IconShieldFill,
-	IconTicketFill,
 	IconTruckFill,
 } from "@intentui/icons";
 import {
@@ -27,13 +22,8 @@ import { Menu } from "@/components/ui/menu";
 import {
 	Sidebar,
 	SidebarContent,
-	SidebarDisclosure,
-	SidebarDisclosureGroup,
-	SidebarDisclosurePanel,
-	SidebarDisclosureTrigger,
 	SidebarFooter,
 	SidebarHeader,
-	SidebarItem,
 	SidebarLabel,
 	SidebarLink,
 	SidebarRail,
@@ -134,33 +124,6 @@ export default function AppSidebar({ user, ...props }: AppSidebarProps) {
 							<SidebarLabel>Settings</SidebarLabel>
 						</SidebarLink>
 					</SidebarSection>
-
-					<SidebarDisclosureGroup defaultExpandedKeys={[1]}>
-						<SidebarDisclosure id={1}>
-							<SidebarDisclosureTrigger>
-								<IconDotsHorizontal />
-								<SidebarLabel>Support</SidebarLabel>
-							</SidebarDisclosureTrigger>
-							<SidebarDisclosurePanel>
-								<SidebarItem href="#" tooltip="Tickets">
-									<IconTicketFill />
-									<SidebarLabel>Tickets</SidebarLabel>
-								</SidebarItem>
-								<SidebarItem href="#" tooltip="Chat Support">
-									<IconMessageFill />
-									<SidebarLabel>Chat Support</SidebarLabel>
-								</SidebarItem>
-								<SidebarItem href="#" tooltip="FAQ">
-									<IconCircleQuestionmarkFill />
-									<SidebarLabel>FAQ</SidebarLabel>
-								</SidebarItem>
-								<SidebarItem href="#" tooltip="Documentation">
-									<IconNotesFill />
-									<SidebarLabel>Documentation</SidebarLabel>
-								</SidebarItem>
-							</SidebarDisclosurePanel>
-						</SidebarDisclosure>
-					</SidebarDisclosureGroup>
 				</SidebarSectionGroup>
 			</SidebarContent>
 

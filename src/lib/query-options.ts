@@ -1,5 +1,8 @@
 import { $getSignedInUser } from "@server/auth";
-import { $getExistingCategories } from "@server/categories";
+import {
+	$getExistingCategories,
+	$getExistingCategoriesWithPagination,
+} from "@server/categories";
 import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
 import { $getProductPage, $getProductStats } from "@server/products";
@@ -113,6 +116,24 @@ export const getOrderQueryOptions = (id: string) =>
 		queryKey: ["dashboard", "order", id],
 		queryFn: async () => {
 			const data = await $getOrder({ data: { id } });
+
+			return data;
+		},
+	});
+
+export const getExistingCategoriesWithPaginationQueryOptions = ({
+	page,
+	limit,
+}: {
+	page: number;
+	limit: 10 | 20 | 30 | 40 | 50;
+}) =>
+	queryOptions({
+		queryKey: ["dashboard", "categories"],
+		queryFn: async () => {
+			const data = await $getExistingCategoriesWithPagination({
+				data: { page, limit },
+			});
 
 			return data;
 		},

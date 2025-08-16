@@ -1,6 +1,7 @@
 import { adminMiddleware, authMiddleware } from "@server/auth";
 import { db } from "@server/db";
 import { order, orderItem, product, user } from "@server/db/schema";
+import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { desc, eq, sql } from "drizzle-orm";
 import z from "zod/v4";
@@ -147,7 +148,11 @@ export const $getOrder = createServerFn()
 			.where(eq(order.id, data.id));
 
 		if (!orderWithItems.length) {
-			throw new Error("Order not found");
+			throw notFound({
+				data: {
+					message: "Order not found",
+				},
+			});
 		}
 
 		const head = orderWithItems[0];

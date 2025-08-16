@@ -147,3 +147,17 @@ export const productFormBackendSchema = z.object({
 export type ProductFormBackendData = z.infer<typeof productFormBackendSchema>;
 
 export type ProductFormData = z.infer<typeof productFormSchema>;
+
+export const createCategorySchema = z.object({
+	name: z.string().min(1, "Please enter a name for the category"),
+	description: z.string().min(1, "Please enter a description for the category"),
+	file: z
+		.file({
+			error: "Please upload an image for the category",
+		})
+		.refine((file) => file !== undefined, {
+			message: "Please upload an image for the category",
+		}),
+});
+
+export type CreateCategoryFormData = z.infer<typeof createCategorySchema>;

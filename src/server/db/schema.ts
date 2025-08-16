@@ -103,10 +103,10 @@ export const categories = sqliteTable(
 		parentId: text("parent_id").references(
 			(): AnySQLiteColumn => categories.id,
 		),
-		imageId: integer("image_id"),
-		createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
-			() => new Date(),
-		),
+		image: text("image"),
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date()),
 		updatedAt: integer("updated_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date())
