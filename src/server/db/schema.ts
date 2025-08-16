@@ -263,10 +263,11 @@ export const order = sqliteTable(
 		}).notNull(),
 		shippingAddress: text("shipping_address", { mode: "json" })
 			.$type<{
-				address: string;
+				street: string;
 				city: string;
-				zipCode: string;
-				phoneNumber: string;
+				state: string;
+				country: string;
+				zip: string;
 			}>()
 			.notNull(),
 		paymentReference: text("payment_reference"),

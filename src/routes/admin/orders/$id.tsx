@@ -14,6 +14,7 @@ import { Loader } from "@ui/loader";
 import { Menu } from "@ui/menu";
 import { SearchField } from "@ui/search-field";
 import { Table } from "@ui/table";
+import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { Blurhash } from "react-blurhash";
 import { toast } from "sonner";
@@ -174,7 +175,7 @@ function RouteComponent() {
 					</Badge>
 				)}
 			</div>
-			<div className="grid grid-cols-3 mb-6">
+			<div className="grid grid-cols-3 gap-4 mb-6">
 				<MetricCard
 					title={`Order #${data.orderNumber}`}
 					action={
@@ -199,15 +200,137 @@ function RouteComponent() {
 						title:
 							"pl-0 font-mono text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
 						action: "w-fit",
-						content: "mt-0",
+						content: "mt-0 h-full",
 					}}
-				></MetricCard>
+				>
+					<div className="space-y-1.5">
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">Name</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm capitalize">
+								{data.userName.toLowerCase()}
+							</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">Email</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.userEmail.toLowerCase()}</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">
+								Placed on
+							</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{format(data.createdAt, "PPpp")}</span>
+						</div>
+					</div>
+				</MetricCard>
+				<MetricCard
+					title="Order Summary"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
+				>
+					<div className="flex flex-col gap-y-1.5">
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">
+								Subtotal
+							</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm tabular-nums font-mono">
+								{formatMoney(data.subtotal)}
+							</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">
+								Shipping
+							</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm tabular-nums font-mono">
+								{formatMoney(data.shippingFee)}
+							</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">Tax</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm tabular-nums font-mono">
+								{formatMoney(data.taxAmount)}
+							</span>
+						</div>
+						{data.discountAmount > 0 && (
+							<div className="grid grid-cols-[auto_1fr_auto] items-center">
+								<p className="text-muted-fg text-sm truncate capitalize">
+									Discount
+								</p>
+								<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+								<span className="text-sm tabular-nums font-mono text-red-500">
+									-{formatMoney(data.discountAmount)}
+								</span>
+							</div>
+						)}
+						<div className="border-t border-border my-2" />
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">Total</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm tabular-nums font-mono font-semibold">
+								{formatMoney(data.total)}
+							</span>
+						</div>
+					</div>
+				</MetricCard>
+				<MetricCard
+					title={`SHIPPING ADDRESS`}
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
+				>
+					<div className="space-y-1.5">
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">
+								Street
+							</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.shippingAddress.street}</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">City</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.shippingAddress.city}</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">State</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.shippingAddress.state}</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">
+								Country
+							</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.shippingAddress.country}</span>
+						</div>
+						<div className="grid grid-cols-[auto_1fr_auto] items-center">
+							<p className="text-muted-fg text-sm truncate capitalize">Zip</p>
+							<div className="mx-2 after:block after:h-[1.5px] after:grow after:bg-[repeating-linear-gradient(to_right,theme(--color-muted-fg/50%)_0,theme(--color-muted-fg/50%)_1.5px,_transparent_1.5px,_transparent_6px)] after:bg-repeat-x after:content-['']" />
+							<span className="text-sm">{data.shippingAddress.zip}</span>
+						</div>
+					</div>
+				</MetricCard>
 			</div>
 			<MetricCard
 				title="Ordered Items"
 				description="List of items in this order"
 				classNames={{
 					header: "block md:grid",
+					title: "tracking-tighter",
 					action: "block mt-4 md:mt-0",
 					content: "p-0 overflow-y-hidden has-[table]:border-t-0",
 				}}
@@ -274,7 +397,6 @@ function RouteComponent() {
 								<Table.Cell className="tabular-nums font-mono font-medium text-fg">
 									{formatMoney(item.pricePerItem)}
 								</Table.Cell>
-
 								<Table.Cell className="tabular-nums font-mono font-medium text-fg">
 									{formatMoney(item.totalPrice)}
 								</Table.Cell>
