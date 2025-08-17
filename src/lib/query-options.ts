@@ -3,6 +3,7 @@ import {
 	$getExistingCategories,
 	$getExistingCategoriesWithPagination,
 } from "@server/categories";
+import { $getHighestAndLowestPrice } from "@server/customers/product";
 import { $searchProducts } from "@server/customers/search";
 import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
@@ -154,5 +155,15 @@ export const searchProductsQueryOptions = (search: string) =>
 			} else {
 				return null;
 			}
+		},
+	});
+
+export const getHighestAndLowestPriceQueryOptions = () =>
+	queryOptions({
+		queryKey: ["dashboard", "highest-and-lowest-price"],
+		queryFn: async () => {
+			const data = await $getHighestAndLowestPrice();
+
+			return data;
 		},
 	});

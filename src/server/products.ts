@@ -179,7 +179,7 @@ export const $createProduct = createServerFn({
 			slug: createId(),
 			description: parsed.description,
 			categoryId: parsed.categoryId,
-			price: parsed.price,
+			price: parsed.price * 100,
 			stock: parsed.stockCount,
 			sellerId: context.session.user.id,
 			images: imagesWithHash,

@@ -164,6 +164,7 @@ export const product = sqliteTable(
 		index("products_by_category").on(t.categoryId),
 		index("products_by_seller").on(t.sellerId),
 		index("products_by_scheduled").on(t.status, t.publishedAt),
+		index("products_by_price").on(t.price),
 	],
 );
 
