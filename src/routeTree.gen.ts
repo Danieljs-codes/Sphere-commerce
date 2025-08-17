@@ -30,6 +30,7 @@ import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/inde
 import { Route as customerStoreIndexRouteImport } from './routes/(customer)/store/index'
 import { Route as AdminProductsNewRouteImport } from './routes/admin/products/new'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders/$id'
+import { Route as customerStoreIdRouteImport } from './routes/(customer)/store/$id'
 import { ServerRoute as ApiUploadthingServerRouteImport } from './routes/api/uploadthing'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
@@ -128,6 +129,11 @@ const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
   path: '/orders/$id',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const customerStoreIdRoute = customerStoreIdRouteImport.update({
+  id: '/store/$id',
+  path: '/store/$id',
+  getParentRoute: () => customerRouteRoute,
+} as any)
 const ApiUploadthingServerRoute = ApiUploadthingServerRouteImport.update({
   id: '/api/uploadthing',
   path: '/api/uploadthing',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/discounts': typeof AdminDiscountsRoute
+  '/store/$id': typeof customerStoreIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/store': typeof customerStoreIndexRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/discounts': typeof AdminDiscountsRoute
+  '/store/$id': typeof customerStoreIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/store': typeof customerStoreIndexRoute
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/discounts': typeof AdminDiscountsRoute
   '/(customer)/': typeof customerIndexRoute
+  '/(customer)/store/$id': typeof customerStoreIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/(customer)/store/': typeof customerStoreIndexRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/discounts'
+    | '/store/$id'
     | '/admin/orders/$id'
     | '/admin/products/new'
     | '/store'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/discounts'
+    | '/store/$id'
     | '/admin/orders/$id'
     | '/admin/products/new'
     | '/store'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/discounts'
     | '/(customer)/'
+    | '/(customer)/store/$id'
     | '/admin/orders/$id'
     | '/admin/products/new'
     | '/(customer)/store/'
@@ -427,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/(customer)/store/$id': {
+      id: '/(customer)/store/$id'
+      path: '/store/$id'
+      fullPath: '/store/$id'
+      preLoaderRoute: typeof customerStoreIdRouteImport
+      parentRoute: typeof customerRouteRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -471,6 +490,7 @@ interface customerRouteRouteChildren {
   customerOrdersRoute: typeof customerOrdersRoute
   customerWishlistRoute: typeof customerWishlistRoute
   customerIndexRoute: typeof customerIndexRoute
+  customerStoreIdRoute: typeof customerStoreIdRoute
   customerStoreIndexRoute: typeof customerStoreIndexRoute
 }
 
@@ -479,6 +499,7 @@ const customerRouteRouteChildren: customerRouteRouteChildren = {
   customerOrdersRoute: customerOrdersRoute,
   customerWishlistRoute: customerWishlistRoute,
   customerIndexRoute: customerIndexRoute,
+  customerStoreIdRoute: customerStoreIdRoute,
   customerStoreIndexRoute: customerStoreIndexRoute,
 }
 

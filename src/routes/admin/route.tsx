@@ -1,4 +1,3 @@
-import { getSidebarState, setFlashCookie } from "@server/utils";
 import {
 	createFileRoute,
 	Outlet,
@@ -10,6 +9,7 @@ import AppSidebarNav from "@/components/admin/app-sidebar-nav";
 import { Container } from "@/components/ui/container";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getSignedUserQueryOptions } from "@/lib/query-options";
+import { getSidebarState, setFlashCookie } from "@/types/utils";
 
 export const Route = createFileRoute("/admin")({
 	beforeLoad: async ({ context }) => {

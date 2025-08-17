@@ -1,9 +1,9 @@
-import { setFlashCookie } from "@server/utils";
 import { redirect } from "@tanstack/react-router";
 import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 import { auth } from "@/lib/auth";
 import { signInSchema, signUpSchema } from "@/lib/schema";
+import { setFlashCookie } from "@/types/utils";
 
 export const $signIn = createServerFn({
 	response: "raw",

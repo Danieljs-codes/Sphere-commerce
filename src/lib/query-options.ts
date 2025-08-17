@@ -3,7 +3,10 @@ import {
 	$getExistingCategories,
 	$getExistingCategoriesWithPagination,
 } from "@server/categories";
-import { $getHighestAndLowestPrice } from "@server/customers/product";
+import {
+	$getHighestAndLowestPrice,
+	$getProducts,
+} from "@server/customers/product";
 import { $searchProducts } from "@server/customers/search";
 import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
@@ -18,6 +21,7 @@ export const getSignedUserQueryOptions = () =>
 
 			return user;
 		},
+		staleTime: 30 * 1000, // 30 Seconds
 	});
 
 export const getOverviewStatsQueryOptions = () =>
@@ -163,6 +167,48 @@ export const getHighestAndLowestPriceQueryOptions = () =>
 		queryKey: ["dashboard", "highest-and-lowest-price"],
 		queryFn: async () => {
 			const data = await $getHighestAndLowestPrice();
+
+			return data;
+		},
+	});
+
+export const getProductsQueryOptions = ({
+	minPrice,
+	maxPrice,
+	category = [],
+	sort = "high-to-low",
+	page = 1,
+	limit = 24,
+}: {
+	minPrice?: number;
+	maxPrice?: number;
+	category?: string[];
+	sort?: "high-to-low" | "low-to-high";
+	page?: number;
+	limit?: number;
+}) =>
+	queryOptions({
+		queryKey: [
+			"store",
+			"products",
+			minPrice,
+			maxPrice,
+			category.join(","),
+			sort,
+			page,
+			limit,
+		],
+		queryFn: async () => {
+			const data = await $getProducts({
+				data: {
+					minPrice,
+					maxPrice,
+					category,
+					sort,
+					page,
+					limit,
+				},
+			});
 
 			return data;
 		},

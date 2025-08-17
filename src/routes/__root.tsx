@@ -1,4 +1,3 @@
-import { getFlashCookie } from "@server/utils";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -13,6 +12,7 @@ import { ThemeProvider } from "next-themes";
 import nProgress from "nprogress";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { getFlashCookie } from "@/types/utils";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 

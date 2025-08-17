@@ -35,13 +35,13 @@ export const $getOrders = createServerFn()
 						"deliveredOrders",
 					),
 				totalMatchingOrders: sql<number>`
-					SUM(
-						CASE 
-							WHEN ${data.status ? sql`${order.status} = ${data.status}` : sql`1=1`} 
-							THEN 1 ELSE 0 
-						END
-					)
-				`.as("totalMatchingOrders"),
+				SUM(
+					CASE 
+						WHEN ${data.status ? sql`${order.status} = ${data.status}` : sql`1=1`} 
+						THEN 1 ELSE 0 
+					END
+				)
+			`.as("totalMatchingOrders"),
 			})
 			.from(order)
 			.get();

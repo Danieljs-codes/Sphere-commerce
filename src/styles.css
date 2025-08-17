@@ -175,13 +175,14 @@
 		scrollbar-color: var(--border) transparent;
 	}
 	html {
-		font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "zero";
+		font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
 		font-variation-settings: normal;
 		scroll-behavior: smooth;
 		height: 100%;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		-webkit-tap-highlight-color: transparent;
+		scrollbar-gutter: stable;
 	}
 	body {
 		background-color: var(--bg);

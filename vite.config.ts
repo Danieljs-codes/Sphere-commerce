@@ -2,16 +2,17 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { denyImports, envOnlyMacros } from "vite-env-only";
 import removeConsole from "vite-plugin-remove-console";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
-	  resolve: {
-    alias: {
-      // /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
-      '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-    },
-  },
+	resolve: {
+		alias: {
+			// /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
+			"@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
+		},
+	},
 	plugins: [
 		// this is the plugin that enables path aliases
 		viteTsConfigPaths({
@@ -23,6 +24,12 @@ const config = defineConfig({
 		}),
 		viteReact(),
 		removeConsole(),
+		envOnlyMacros(),
+		denyImports({
+			client: {
+				files: ["**/server/**/*"],
+			},
+		}),
 	],
 });
 

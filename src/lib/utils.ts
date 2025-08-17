@@ -33,3 +33,25 @@ export function wait(ms: number) {
 		setTimeout(resolve, ms);
 	});
 }
+
+export function stripHtmlTags(html: string): string {
+	if (typeof document !== "undefined") {
+		// Browser environment
+		const div = document.createElement("div");
+		div.innerHTML = html;
+		return div.textContent || div.innerText || "";
+	}
+	// Fallback for non-browser environments (Node.js, etc.)
+	return html.replace(/<[^>]*>?/gm, "");
+}
+
+/**
+ * Estimates if text will need more than one line
+ * @param text The text to check
+ * @param maxCharsPerLine Approximate max characters per line (default: 40)
+ * @returns boolean indicating if text will likely wrap
+ */
+export function willTextWrap(text: string, maxCharsPerLine = 40): boolean {
+  // Simple heuristic: if text is longer than maxCharsPerLine, it will likely wrap
+  return text.length > maxCharsPerLine;
+}
