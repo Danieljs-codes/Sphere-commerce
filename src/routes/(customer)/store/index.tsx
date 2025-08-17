@@ -1,3 +1,5 @@
+import { PreviewProductModal } from "@components/preview-product-modal";
+import type { Product } from "@server/db/schema";
 import { IconEyeFilled, IconHeartFilled } from "@tabler/icons-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -68,6 +70,9 @@ function RouteComponent() {
 		getProductsQueryOptions(search),
 	);
 
+	const [product, setProduct] = useState<
+		(Product & { categoryName: string | null }) | null
+	>(null);
 	const [priceRange, setPriceRange] = useState<[number, number]>([
 		prices.lowestPrice / 100,
 		prices.highestPrice / 100,
@@ -196,7 +201,12 @@ function RouteComponent() {
 										<Button size="sq-xs" intent="secondary" isCircle>
 											<IconHeartFilled data-slot="icon" />
 										</Button>
-										<Button size="sq-xs" intent="secondary" isCircle>
+										<Button
+											size="sq-xs"
+											intent="secondary"
+											isCircle
+											onPress={() => setProduct(product)}
+										>
 											<IconEyeFilled data-slot="icon" />
 										</Button>
 									</div>
@@ -239,6 +249,12 @@ function RouteComponent() {
 					</div>
 				</div>
 			</div>
+			<PreviewProductModal
+				product={product}
+				onOpenChange={(isOpen) => {
+					if (!isOpen) setProduct(null);
+				}}
+			/>
 		</div>
 	);
 }
