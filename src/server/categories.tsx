@@ -8,24 +8,22 @@ import { asc, sql } from "drizzle-orm";
 import sharp from "sharp";
 import z from "zod/v4";
 
-export const $getExistingCategories = createServerFn()
-	.middleware([adminMiddleware])
-	.handler(async () => {
-		const categoriesRows = await db
-			.select({
-				id: categories.id,
-				name: categories.name,
-				slug: categories.slug,
-				description: categories.description,
-				parentId: categories.parentId,
-				image: categories.image,
-				createdAt: categories.createdAt,
-			})
-			.from(categories)
-			.orderBy(asc(categories.createdAt));
+export const $getExistingCategories = createServerFn().handler(async () => {
+	const categoriesRows = await db
+		.select({
+			id: categories.id,
+			name: categories.name,
+			slug: categories.slug,
+			description: categories.description,
+			parentId: categories.parentId,
+			image: categories.image,
+			createdAt: categories.createdAt,
+		})
+		.from(categories)
+		.orderBy(asc(categories.createdAt));
 
-		return categoriesRows;
-	});
+	return categoriesRows;
+});
 
 export const $getExistingCategoriesWithPagination = createServerFn()
 	.middleware([adminMiddleware])

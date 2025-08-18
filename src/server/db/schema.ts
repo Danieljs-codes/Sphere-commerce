@@ -204,7 +204,9 @@ export const cart = sqliteTable(
 			.$defaultFn(() => createId()),
 		userId: text("user_id")
 			.references(() => user.id)
-			.notNull(),
+			.notNull()
+			.unique(),
+		total: integer("total").notNull(),
 		discountId: text("discount_id").references(() => discount.id),
 		discountCode: text("discount_code"),
 		createdAt: integer("created_at", { mode: "timestamp" })
@@ -239,6 +241,7 @@ export const cartItems = sqliteTable(
 	(t) => [
 		index("cart_items_by_cart").on(t.cartId),
 		index("cart_items_by_cart_product").on(t.cartId, t.productId),
+		uniqueIndex("cart_items_by_cart_product_unique").on(t.cartId, t.productId),
 	],
 );
 

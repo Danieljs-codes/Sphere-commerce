@@ -29,7 +29,12 @@ export const PreviewProductModal = ({
 
 	return (
 		<Modal>
-			<Modal.Content size="4xl" isOpen={!!product} onOpenChange={onOpenChange}>
+			<Modal.Content
+				size="4xl"
+				isOpen={!!product}
+				onOpenChange={onOpenChange}
+				isBlurred
+			>
 				<div>
 					<div className="grid lg:grid-cols-2">
 						<Carousel
@@ -101,7 +106,7 @@ export const PreviewProductModal = ({
 										</p>
 									</div>
 									<div
-										className={`text-muted-fg! mt-4 text-sm leading-[1.6] line-clamp-3`}
+										className={`prose prose-sm prose-muted-fg mt-4 line-clamp-3`}
 										dangerouslySetInnerHTML={{
 											__html: product?.description ?? "",
 										}}
@@ -113,12 +118,19 @@ export const PreviewProductModal = ({
 									>
 										Read more
 									</Link>
-									<div className="flex flex-wrap gap-x-2 gap-y-1.5 mt-6">
-										{product?.tags.map((tag) => (
-											<Badge key={tag} className="capitalize">
-												{tag.toLowerCase()}
-											</Badge>
-										))}
+									<div className="mt-6">
+										<p className="text-muted-fg text-sm font-medium">Tags</p>
+										<div className="flex flex-wrap gap-x-2 gap-y-1.5 mt-2">
+											{product?.tags.map((tag) => (
+												<Badge
+													key={tag}
+													className="capitalize"
+													intent="secondary"
+												>
+													{tag.toLowerCase()}
+												</Badge>
+											))}
+										</div>
 									</div>
 								</div>
 								<div className="mt-6 mb-2 grid grid-cols-2 gap-2">

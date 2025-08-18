@@ -55,3 +55,4 @@ export function willTextWrap(text: string, maxCharsPerLine = 40): boolean {
   // Simple heuristic: if text is longer than maxCharsPerLine, it will likely wrap
   return text.length > maxCharsPerLine;
 }
+

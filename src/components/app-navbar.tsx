@@ -30,7 +30,6 @@ import {
 } from "@/components/ui/navbar";
 import { Separator } from "@/components/ui/separator";
 import { useDebouncedValue } from "@/hooks/use-debounce-value";
-import { useHotkeys } from "@/hooks/use-hot-keys";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import {
 	getSignedUserQueryOptions,
@@ -252,9 +251,21 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 				<NavbarSpacer />
 				<NavbarSection className="max-md:hidden">
 					<SearchCommandMenu />
-					<Button intent="plain" size="sq-sm" isCircle aria-label="Your Bag">
+					<Link
+						to="/cart"
+						className={buttonStyles({
+							isCircle: true,
+							intent: "plain",
+							size: "sq-sm",
+							className: cn(
+								pathname === "/cart" &&
+									"[--btn-icon:var(--btn-fg)] [--btn-bg:var(--btn-overlay)]",
+							),
+						})}
+						aria-label="Your Bag"
+					>
 						<IconShoppingBag />
-					</Button>
+					</Link>
 					<ThemeToggle />
 					<Separator orientation="vertical" className="mr-3 ml-1 h-5" />
 					{user ? (
@@ -315,15 +326,6 @@ function SearchCommandMenu() {
 		});
 	}, [debouncedSearch, navigate]);
 
-	useHotkeys([
-		["ctrl + K", () => setIsOpen(true)],
-		["ctrl + S", () => setIsOpen(true)],
-	]);
-
-	useEffect(() => {
-		console.log(isOpen);
-	}, [isOpen]);
-
 	return (
 		<>
 			<Button
@@ -343,6 +345,7 @@ function SearchCommandMenu() {
 				inputValue={search}
 				onInputChange={(value) => setSearch(value)}
 				isPending={isSuspending}
+				shortcut="/"
 			>
 				<CommandMenu.Search
 					className="inset-ring-border mb-(--gutter) sm:inset-ring sm:rounded-(--cmd-radius) sm:bg-bg"
@@ -354,7 +357,16 @@ function SearchCommandMenu() {
 							<CommandMenu.Item
 								textValue={product.name}
 								key={product.id}
-								className="gap-2"
+								className="gap-2 cursor-pointer"
+								onPress={async () => {
+									await navigate({
+										to: "/store/$id",
+										params: {
+											id: product.id,
+										},
+									});
+									setIsOpen(false);
+								}}
 							>
 								<MetricCard
 									classNames={{

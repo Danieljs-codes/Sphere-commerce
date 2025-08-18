@@ -20,6 +20,7 @@ import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as customerWishlistRouteImport } from './routes/(customer)/wishlist'
 import { Route as customerOrdersRouteImport } from './routes/(customer)/orders'
+import { Route as customerCartRouteImport } from './routes/(customer)/cart'
 import { Route as customerAboutRouteImport } from './routes/(customer)/about'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
@@ -77,6 +78,11 @@ const customerWishlistRoute = customerWishlistRouteImport.update({
 const customerOrdersRoute = customerOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => customerRouteRoute,
+} as any)
+const customerCartRoute = customerCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => customerRouteRoute,
 } as any)
 const customerAboutRoute = customerAboutRouteImport.update({
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/about': typeof customerAboutRoute
+  '/cart': typeof customerCartRoute
   '/orders': typeof customerOrdersRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof authSignInRoute
   '/sign-up': typeof authSignUpRoute
   '/about': typeof customerAboutRoute
+  '/cart': typeof customerCartRoute
   '/orders': typeof customerOrdersRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(customer)/about': typeof customerAboutRoute
+  '/(customer)/cart': typeof customerCartRoute
   '/(customer)/orders': typeof customerOrdersRoute
   '/(customer)/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/about'
+    | '/cart'
     | '/orders'
     | '/wishlist'
     | '/admin/categories'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/about'
+    | '/cart'
     | '/orders'
     | '/wishlist'
     | '/admin/categories'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in'
     | '/(auth)/sign-up'
     | '/(customer)/about'
+    | '/(customer)/cart'
     | '/(customer)/orders'
     | '/(customer)/wishlist'
     | '/admin/categories'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof customerOrdersRouteImport
+      parentRoute: typeof customerRouteRoute
+    }
+    '/(customer)/cart': {
+      id: '/(customer)/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof customerCartRouteImport
       parentRoute: typeof customerRouteRoute
     }
     '/(customer)/about': {
@@ -487,6 +506,7 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
 
 interface customerRouteRouteChildren {
   customerAboutRoute: typeof customerAboutRoute
+  customerCartRoute: typeof customerCartRoute
   customerOrdersRoute: typeof customerOrdersRoute
   customerWishlistRoute: typeof customerWishlistRoute
   customerIndexRoute: typeof customerIndexRoute
@@ -496,6 +516,7 @@ interface customerRouteRouteChildren {
 
 const customerRouteRouteChildren: customerRouteRouteChildren = {
   customerAboutRoute: customerAboutRoute,
+  customerCartRoute: customerCartRoute,
   customerOrdersRoute: customerOrdersRoute,
   customerWishlistRoute: customerWishlistRoute,
   customerIndexRoute: customerIndexRoute,

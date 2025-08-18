@@ -74,6 +74,28 @@ export const authMiddleware = createMiddleware({ type: "function" }).server(
 	},
 );
 
+export const isAuthenticatedMiddleware = createMiddleware({
+	type: "function",
+})
+	.middleware([authMiddleware])
+	.server(async ({ context, next }) => {
+		if (!context.session) {
+			setFlashCookie({
+				intent: "error",
+				message: "You must be signed in to access this page.",
+			});
+			throw redirect({
+				to: "/sign-in",
+			});
+		}
+
+		return next({
+			context: {
+				session: context.session,
+			},
+		});
+	});
+
 export const adminMiddleware = createMiddleware({ type: "function" })
 	.middleware([authMiddleware])
 	.server(async ({ context, next }) => {
