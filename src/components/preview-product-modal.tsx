@@ -1,13 +1,23 @@
 import { IconAddToCartFill } from "@intentui/icons";
 import type { Product } from "@server/db/schema";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import { Badge } from "@ui/badge";
 import { Button, buttonStyles } from "@ui/button";
 import { Carousel } from "@ui/carousel";
 import { Link } from "@ui/link";
+import { Loader } from "@ui/loader";
 import { Modal } from "@ui/modal";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useState } from "react";
 import { Blurhash } from "react-blurhash";
+import { toast } from "sonner";
+import { addToCart } from "@/lib/carts";
+import { getCartQueryOptions } from "@/lib/query-options";
 import { formatMoney } from "@/lib/utils";
 
 export const PreviewProductModal = ({
@@ -17,14 +27,62 @@ export const PreviewProductModal = ({
 	product: (Product & { categoryName: string | null }) | null;
 	onOpenChange: (isOpen: boolean) => void;
 }) => {
+	const queryClient = useQueryClient();
+	const context = useRouteContext({ from: "/(customer)" });
 	const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 	const plugin = useRef(Autoplay({ delay: 1000, stopOnInteraction: true }));
+	const { data: cart } = useSuspenseQuery(getCartQueryOptions());
+
+	const { mutate: addToCartMutation, isPending } = useMutation({
+		mutationFn: async (productId: string) => {
+			await addToCart(productId, 1, !!context.user);
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: getCartQueryOptions().queryKey,
+			});
+			toast.success(`${product?.name} added to cart`);
+		},
+		onError: (error) => toast.error(error.message),
+	});
 
 	const handleImageLoad = (url: string) => {
 		setLoadedImages((prev) => ({
 			...prev,
 			[url]: true,
 		}));
+	};
+
+	const handleAddToCart = () => {
+		if (!product) return;
+
+		const existingItem = cart.find((item) => item.product.id === product.id);
+
+		// If product exists in cart and we're trying to add more than available
+		if (existingItem) {
+			if (existingItem.quantity >= product.stock) {
+				toast.error(
+					`Cannot add more. Only ${product.stock} ${product.name} available in stock.`,
+				);
+				return;
+			}
+
+			if (existingItem.quantity + 1 > product.stock) {
+				const available = product.stock - existingItem.quantity;
+				toast.error(
+					`Only ${available} more ${product.name} available in stock.`,
+				);
+				return;
+			}
+		}
+
+		// If product doesn't exist in cart but is out of stock
+		if (!existingItem && product.stock <= 0) {
+			toast.error(`${product.name} is out of stock.`);
+			return;
+		}
+
+		addToCartMutation(product.id);
 	};
 
 	return (
@@ -106,7 +164,8 @@ export const PreviewProductModal = ({
 										</p>
 									</div>
 									<div
-										className={`prose prose-sm prose-muted-fg mt-4 line-clamp-3`}
+										className={`prose prose-sm prose-muted-fg! mt-4 line-clamp-3`}
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: I know
 										dangerouslySetInnerHTML={{
 											__html: product?.description ?? "",
 										}}
@@ -134,9 +193,24 @@ export const PreviewProductModal = ({
 									</div>
 								</div>
 								<div className="mt-6 mb-2 grid grid-cols-2 gap-2">
-									<Button size="lg">
-										<IconAddToCartFill />
-										Add to cart
+									<Button
+										size="lg"
+										onPress={handleAddToCart}
+										isPending={isPending}
+										isDisabled={
+											cart.some(
+												(item) =>
+													item.product.id === product?.id &&
+													item.quantity >= product?.stock,
+											) || product?.stock <= 0
+										}
+									>
+										{isPending ? <Loader /> : <IconAddToCartFill />}
+										{product?.stock <= 0
+											? "Out of Stock"
+											: isPending
+												? "Adding to cart..."
+												: "Add to cart"}
 									</Button>
 									<Link
 										to="/store/$id"

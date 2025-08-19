@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { $signIn } from "@server/auth";
+import { $mergeCartOnSignIn } from "@server/customers/carts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
@@ -11,6 +12,8 @@ import { Link } from "@/components/ui/link";
 import { Loader } from "@/components/ui/loader";
 import { Note } from "@/components/ui/note";
 import { TextField } from "@/components/ui/text-field";
+import { getGuestCart } from "@/lib/carts";
+import { getSignedUserQueryOptions } from "@/lib/query-options";
 import { type SignInSchema, signInSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
@@ -34,41 +37,36 @@ function RouteComponent() {
 			rememberMe: false,
 		},
 	});
+
+	const { mutateAsync: mergeCartOnSignIn } = useMutation({
+		mutationKey: ["auth", "sign-in"],
+		mutationFn: async () => {
+			await $mergeCartOnSignIn({
+				data: getGuestCart(),
+			});
+		},
+	});
+
 	const { mutate: signIn, isPending } = useMutation({
 		mutationKey: ["auth", "sign-in"],
 		mutationFn: async (data: SignInSchema) => {
 			return await $signIn({ data });
 		},
-		onSuccess: (data) => {
+		onSuccess: async (data) => {
 			// @ts-ignore
 			const name = (data?.user?.name as string)?.split(" ")[0];
+			await Promise.all([
+				mergeCartOnSignIn(),
+				queryClient.invalidateQueries({
+					queryKey: getSignedUserQueryOptions().queryKey,
+				}),
+			]);
 			toast.success(`Signed in successfully! Welcome back, ${name}`);
 			navigate({ to: "/" });
 		},
 
 		onError: (error) => setError("root", { message: error.message }),
 	});
-
-	// const onSubmit = async (formInputData: SignInSchema) => {
-	// 	await authClient.signIn.email(formInputData, {
-	// 		onSuccess: ({ data }) => {
-	// 			const name = data?.user?.name as string | undefined;
-	// 			toast.success(
-	// 				name
-	// 					? `Signed in successfully! Welcome back, ${name}`
-	// 					: "Signed in successfully!",
-	// 			);
-	// 			navigate({ to: "/" });
-	// 			// Remove the queryKey entirely so next time the beforeLoad of `customers/route.tsx` runs it refetches new data
-	// 			queryClient.removeQueries({
-	// 				queryKey: convexQuery(api.user.getSignedInUser, {}).queryKey,
-	// 			});
-	// 		},
-	// 		onError: ({ error: responseError }) => {
-	// 			setError("root", { message: responseError.message });
-	// 		},
-	// 	});
-	// };
 
 	const onSubmit = (data: SignInSchema) => {
 		signIn(data);

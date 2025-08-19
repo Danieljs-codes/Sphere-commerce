@@ -4,6 +4,7 @@ import z from "zod/v4";
 import { Container } from "@/components/ui/container";
 import { NavbarProvider } from "@/components/ui/navbar";
 import {
+	getCartQueryOptions,
 	getSignedUserQueryOptions,
 	searchProductsQueryOptions,
 } from "@/lib/query-options";
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/(customer)")({
 		context.queryClient.ensureQueryData(
 			searchProductsQueryOptions(deps.search),
 		);
+		context.queryClient.ensureQueryData(getCartQueryOptions());
 		return {
 			title: "Customer",
 		};

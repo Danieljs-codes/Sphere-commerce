@@ -3,6 +3,7 @@ import {
 	$getExistingCategories,
 	$getExistingCategoriesWithPagination,
 } from "@server/categories";
+import { $getCart } from "@server/customers/carts";
 import {
 	$getHighestAndLowestPrice,
 	$getProducts,
@@ -212,4 +213,15 @@ export const getProductsQueryOptions = ({
 
 			return data;
 		},
+	});
+
+export const getCartQueryOptions = () =>
+	queryOptions({
+		queryKey: ["cart"],
+		queryFn: async () => {
+			const data = await $getCart();
+
+			return data;
+		},
+		staleTime: 30 * 2 * 1000,
 	});

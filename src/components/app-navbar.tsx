@@ -32,6 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { useDebouncedValue } from "@/hooks/use-debounce-value";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import {
+	getCartQueryOptions,
 	getSignedUserQueryOptions,
 	searchProductsQueryOptions,
 } from "@/lib/query-options";
@@ -198,6 +199,7 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 	const pathname = useLocation({
 		select: (s) => s.pathname,
 	});
+	const { data: cart } = useSuspenseQueryDeferred(getCartQueryOptions());
 	return (
 		<NavbarProvider>
 			<Navbar {...props}>
@@ -260,10 +262,16 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 							className: cn(
 								pathname === "/cart" &&
 									"[--btn-icon:var(--btn-fg)] [--btn-bg:var(--btn-overlay)]",
+								"relative",
 							),
 						})}
 						aria-label="Your Bag"
 					>
+						{cart.length > 0 && (
+							<span className="absolute text-white bg-primary text-[10px] rounded-full size-4 -right-1 -top-1.5 flex items-center justify-center">
+								{cart.length}
+							</span>
+						)}
 						<IconShoppingBag />
 					</Link>
 					<ThemeToggle />

@@ -1,179 +1,190 @@
 .prose {
-  /* Use your design system colors */
-  --prose-color: var(--fg);
-  --prose-strong-color: var(--fg);
-  --prose-link-color: var(--primary);
-  --prose-code-color: var(--fg);
-  --prose-marker-color: var(--muted-fg);
-  --prose-link-underline-color: var(--primary);
-  --prose-th-borders: var(--border);
-  --prose-td-borders: var(--border);
-  --prose-hr-color: var(--border);
-  --prose-blockquote-border-color: var(--border);
+	/* Use your design system colors */
+	--prose-color: var(--fg);
+	--prose-strong-color: var(--fg);
+	--prose-link-color: var(--primary);
+	--prose-code-color: var(--fg);
+	--prose-marker-color: var(--muted-fg);
+	--prose-link-underline-color: var(--primary);
+	--prose-th-borders: var(--border);
+	--prose-td-borders: var(--border);
+	--prose-hr-color: var(--border);
+	--prose-blockquote-border-color: var(--border);
 
-  &:where(.dark, .dark *) {
-    --prose-color: var(--fg);
-    --prose-strong-color: var(--fg);
-    --prose-link-color: var(--primary);
-    --prose-code-color: var(--fg);
-    --prose-marker-color: var(--muted-fg);
-    --prose-link-underline-color: var(--primary);
-    --prose-th-borders: var(--border);
-    --prose-td-borders: var(--border);
-    --prose-hr-color: var(--border);
-    --prose-blockquote-border-color: var(--border);
-  }
+	&:where(.dark, .dark *) {
+		--prose-color: var(--fg);
+		--prose-strong-color: var(--fg);
+		--prose-link-color: var(--primary);
+		--prose-code-color: var(--fg);
+		--prose-marker-color: var(--muted-fg);
+		--prose-link-underline-color: var(--primary);
+		--prose-th-borders: var(--border);
+		--prose-td-borders: var(--border);
+		--prose-hr-color: var(--border);
+		--prose-blockquote-border-color: var(--border);
+	}
 
-  color: var(--prose-color);
-  font-size: var(--text-sm);
-  line-height: 1.5;
+	color: var(--prose-color);
+	font-size: var(--text-sm);
+	line-height: 1.5;
 
-  /* Basic spacing between elements */
-  *:where(:not(.not-prose, .not-prose *)) + *:where(:not(.not-prose, .not-prose *)) {
-    margin-top: calc(var(--spacing) * 4);
-  }
+	/* Basic spacing between elements */
+	*:where(:not(.not-prose, .not-prose *))
+		+ *:where(:not(.not-prose, .not-prose *)) {
+		margin-top: calc(var(--spacing) * 4);
+	}
 
-  /* Paragraph spacing */
-  p:where(:not(.not-prose, .not-prose *)) {
-    margin-top: calc(var(--spacing) * 4);
-    margin-bottom: calc(var(--spacing) * 4);
-  }
+	/* Paragraph spacing */
+	p:where(:not(.not-prose, .not-prose *)) {
+		margin-top: calc(var(--spacing) * 4);
+		margin-bottom: calc(var(--spacing) * 4);
+	}
 
-  /* Ordered lists */
-  ol:where(:not(.not-prose, .not-prose *)) {
-    padding-left: calc(var(--spacing) * 6);
-    list-style-type: decimal;
-    margin-top: calc(var(--spacing) * 4);
-    margin-bottom: calc(var(--spacing) * 4);
-  }
+	/* Ordered lists */
+	ol:where(:not(.not-prose, .not-prose *)) {
+		padding-left: calc(var(--spacing) * 6);
+		list-style-type: decimal;
+		margin-top: calc(var(--spacing) * 4);
+		margin-bottom: calc(var(--spacing) * 4);
+	}
 
-  ol li:where(:not(.not-prose, .not-prose *)) {
-    padding-left: calc(var(--spacing) * 2);
-    margin-top: calc(var(--spacing) * 2);
-  }
+	ol li:where(:not(.not-prose, .not-prose *)) {
+		padding-left: calc(var(--spacing) * 2);
+		margin-top: calc(var(--spacing) * 2);
+	}
 
-  ol li:where(:not(.not-prose, .not-prose *))::marker {
-    font-weight: 600;
-    color: var(--prose-strong-color);
-  }
+	ol li:where(:not(.not-prose, .not-prose *))::marker {
+		font-weight: 600;
+		color: var(--prose-strong-color);
+	}
 
-  /* Unordered lists */
-  ul:where(:not(.not-prose, .not-prose *)) {
-    padding-left: calc(var(--spacing) * 6);
-    list-style-type: disc;
-    margin-top: calc(var(--spacing) * 4);
-    margin-bottom: calc(var(--spacing) * 4);
-  }
+	/* Unordered lists */
+	ul:where(:not(.not-prose, .not-prose *)) {
+		padding-left: calc(var(--spacing) * 6);
+		list-style-type: disc;
+		margin-top: calc(var(--spacing) * 4);
+		margin-bottom: calc(var(--spacing) * 4);
+	}
 
-  ul li:where(:not(.not-prose, .not-prose *)) {
-    padding-left: calc(var(--spacing) * 2);
-    margin-top: calc(var(--spacing) * 2);
-  }
+	ul li:where(:not(.not-prose, .not-prose *)) {
+		padding-left: calc(var(--spacing) * 2);
+		margin-top: calc(var(--spacing) * 2);
+	}
 
-  ul li:where(:not(.not-prose, .not-prose *))::marker {
-    color: var(--prose-marker-color);
-  }
+	ul li:where(:not(.not-prose, .not-prose *))::marker {
+		color: var(--prose-marker-color);
+	}
 
-  /* Links */
-  a:where(:not(.not-prose, .not-prose *)) {
-    color: var(--prose-link-color);
-    font-weight: var(--font-weight-medium);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: var(--prose-link-underline-color);
-    text-decoration-thickness: 1px;
-  }
+	/* Links */
+	a:where(:not(.not-prose, .not-prose *)) {
+		color: var(--prose-link-color);
+		font-weight: var(--font-weight-medium);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--prose-link-underline-color);
+		text-decoration-thickness: 1px;
+	}
 
-  a:hover:where(:not(.not-prose, .not-prose *)) {
-    text-decoration-thickness: 2px;
-    opacity: 0.8;
-  }
+	a:hover:where(:not(.not-prose, .not-prose *)) {
+		text-decoration-thickness: 2px;
+		opacity: 0.8;
+	}
 
-  /* Strong/Bold text */
-  strong:where(:not(.not-prose, .not-prose *)) {
-    color: var(--prose-strong-color);
-    font-weight: var(--font-weight-semibold);
-  }
+	/* Strong/Bold text */
+	strong:where(:not(.not-prose, .not-prose *)) {
+		color: var(--prose-strong-color);
+		font-weight: var(--font-weight-semibold);
+	}
 
-  /* Italic text */
-  em:where(:not(.not-prose, .not-prose *)) {
-    font-style: italic;
-  }
+	/* Italic text */
+	em:where(:not(.not-prose, .not-prose *)) {
+		font-style: italic;
+	}
 
-  /* Underlined text */
-  u:where(:not(.not-prose, .not-prose *)) {
-    text-decoration: underline;
-  }
+	/* Underlined text */
+	u:where(:not(.not-prose, .not-prose *)) {
+		text-decoration: underline;
+	}
 
-  /* Strikethrough text */
-  s:where(:not(.not-prose, .not-prose *)) {
-    text-decoration: line-through;
-  }
+	/* Strikethrough text */
+	s:where(:not(.not-prose, .not-prose *)) {
+		text-decoration: line-through;
+	}
 
-  /* Code (inline) */
-  code:where(:not(.not-prose, .not-prose *)) {
-    font-variant-ligatures: none;
-    font-family: var(--font-mono);
-    font-weight: var(--font-weight-medium);
-    color: var(--prose-code-color);
-    background-color: var(--muted);
-    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
-    border-radius: calc(var(--radius-xs));
-    font-size: 0.875em;
-  }
+	/* Code (inline) */
+	code:where(:not(.not-prose, .not-prose *)) {
+		font-variant-ligatures: none;
+		font-family: var(--font-mono);
+		font-weight: var(--font-weight-medium);
+		color: var(--prose-code-color);
+		background-color: var(--muted);
+		padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+		border-radius: calc(var(--radius-xs));
+		font-size: 0.875em;
+	}
 
-  code:where(:not(.not-prose, .not-prose *))::before,
-  code:where(:not(.not-prose, .not-prose *))::after {
-    display: none;
-  }
+	code:where(:not(.not-prose, .not-prose *))::before,
+	code:where(:not(.not-prose, .not-prose *))::after {
+		display: none;
+	}
 
-  /* Pre/Code blocks */
-  pre:where(:not(.not-prose, .not-prose *)) {
-    background-color: var(--muted);
-    padding: calc(var(--spacing) * 4);
-    border-radius: var(--radius-lg);
-    margin-top: calc(var(--spacing) * 6);
-    margin-bottom: calc(var(--spacing) * 6);
-    overflow-x: auto;
-  }
+	/* Pre/Code blocks */
+	pre:where(:not(.not-prose, .not-prose *)) {
+		background-color: var(--muted);
+		padding: calc(var(--spacing) * 4);
+		border-radius: var(--radius-lg);
+		margin-top: calc(var(--spacing) * 6);
+		margin-bottom: calc(var(--spacing) * 6);
+		overflow-x: auto;
+	}
 
-  pre code:where(:not(.not-prose, .not-prose *)) {
-    background-color: transparent;
-    padding: 0;
-    font-size: var(--text-sm);
-    line-height: 1.7;
-  }
+	pre code:where(:not(.not-prose, .not-prose *)) {
+		background-color: transparent;
+		padding: 0;
+		font-size: var(--text-sm);
+		line-height: 1.7;
+	}
 
-  /* Horizontal rule */
-  hr:where(:not(.not-prose, .not-prose *)) {
-    border-color: var(--prose-hr-color);
-    margin-top: calc(var(--spacing) * 8);
-    margin-bottom: calc(var(--spacing) * 8);
-  }
+	/* Horizontal rule */
+	hr:where(:not(.not-prose, .not-prose *)) {
+		border-color: var(--prose-hr-color);
+		margin-top: calc(var(--spacing) * 8);
+		margin-bottom: calc(var(--spacing) * 8);
+	}
 
-  /* Blockquotes */
-  blockquote:where(:not(.not-prose, .not-prose *)) {
-    font-style: italic;
-    border-left: 4px solid var(--prose-blockquote-border-color);
-    padding-left: calc(var(--spacing) * 4);
-    margin-top: calc(var(--spacing) * 6);
-    margin-bottom: calc(var(--spacing) * 6);
-    color: var(--muted-fg);
-  }
+	/* Blockquotes */
+	blockquote:where(:not(.not-prose, .not-prose *)) {
+		font-style: italic;
+		border-left: 4px solid var(--prose-blockquote-border-color);
+		padding-left: calc(var(--spacing) * 4);
+		margin-top: calc(var(--spacing) * 6);
+		margin-bottom: calc(var(--spacing) * 6);
+		color: var(--muted-fg);
+	}
 
-  /* First and last child margin reset */
-  :first-child:where(:not(.not-prose, .not-prose *)) {
-    margin-top: 0;
-  }
+	/* First and last child margin reset */
+	:first-child:where(:not(.not-prose, .not-prose *)) {
+		margin-top: 0;
+	}
 
-  :last-child:where(:not(.not-prose, .not-prose *)) {
-    margin-bottom: 0;
-  }
+	:last-child:where(:not(.not-prose, .not-prose *)) {
+		margin-bottom: 0;
+	}
 
-  /* Nested list spacing */
-  li > ol:where(:not(.not-prose, .not-prose *)),
-  li > ul:where(:not(.not-prose, .not-prose *)) {
-    margin-top: calc(var(--spacing) * 2);
-    margin-bottom: calc(var(--spacing) * 2);
-  }
+	/* Nested list spacing */
+	li > ol:where(:not(.not-prose, .not-prose *)),
+	li > ul:where(:not(.not-prose, .not-prose *)) {
+		margin-top: calc(var(--spacing) * 2);
+		margin-bottom: calc(var(--spacing) * 2);
+	}
+}
+
+/* Muted foreground text */
+.prose-muted-fg {
+	color: var(--muted-fg);
+}
+
+/* Dark mode support */
+.dark .prose-muted-fg {
+	color: var(--muted-fg);
 }
