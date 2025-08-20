@@ -239,3 +239,46 @@ export const createDiscountSchema = z
 	});
 
 export type CreateDiscountFormData = z.infer<typeof createDiscountSchema>;
+
+export const checkoutSchema = z
+	.object({
+		firstName: z
+			.string()
+			.min(2, "First name must be at least 2 characters")
+			.max(100, "First name must not exceed 100 characters"),
+		lastName: z
+			.string()
+			.min(2, "Last name must be at least 2 characters")
+			.max(100, "Last name must not exceed 100 characters"),
+		street: z
+			.string()
+			.min(2, "Street address must be at least 2 characters")
+			.max(100, "Street address must not exceed 100 characters"),
+		city: z
+			.string()
+			.min(2, "City must be at least 2 characters")
+			.max(100, "City must not exceed 100 characters"),
+		state: z
+			.string()
+			.min(2, "State must be at least 2 characters")
+			.max(100, "State must not exceed 100 characters"),
+		postalCode: z
+			.string()
+			.min(2, "Postal code must be at least 2 characters")
+			.max(100, "Postal code must not exceed 100 characters"),
+		country: z
+			.string()
+			.min(2, "Country must be at least 2 characters")
+			.max(100, "Country must not exceed 100 characters"),
+	})
+	.superRefine(({ postalCode }, ctx) => {
+		if (!/^\d{5}$/.test(postalCode)) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Invalid postal code. Must be 5 digits.",
+				path: ["postalCode"],
+			});
+		}
+	});
+
+export type CheckoutFormData = z.infer<typeof checkoutSchema>;

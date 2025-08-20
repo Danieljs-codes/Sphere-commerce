@@ -182,7 +182,7 @@ export const discount = sqliteTable(
 		minimumOrderAmount: integer("minimum_order_amount"),
 		maximumDiscountAmount: integer("maximum_discount_amount"),
 		usageLimit: integer("usage_limit"),
-		usageCount: integer("usage_count"),
+		usageCount: integer("usage_count").notNull().default(0),
 		startsAt: integer("starts_at", { mode: "timestamp" }).notNull(),
 		expiresAt: integer("expires_at", { mode: "timestamp" }),
 		isActive: integer("is_active", { mode: "boolean" }).notNull(),
@@ -206,7 +206,7 @@ export const cart = sqliteTable(
 			.references(() => user.id)
 			.notNull()
 			.unique(),
-		total: integer("total").notNull(),
+		total: integer("sub_total").notNull().default(0),
 		discountId: text("discount_id").references(() => discount.id),
 		discountCode: text("discount_code"),
 		createdAt: integer("created_at", { mode: "timestamp" })

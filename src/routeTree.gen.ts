@@ -19,7 +19,9 @@ import { Route as AdminDiscountsRouteImport } from './routes/admin/discounts'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as customerWishlistRouteImport } from './routes/(customer)/wishlist'
+import { Route as customerPaymentCallbackRouteImport } from './routes/(customer)/payment-callback'
 import { Route as customerOrdersRouteImport } from './routes/(customer)/orders'
+import { Route as customerCheckoutRouteImport } from './routes/(customer)/checkout'
 import { Route as customerCartRouteImport } from './routes/(customer)/cart'
 import { Route as customerAboutRouteImport } from './routes/(customer)/about'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
@@ -75,9 +77,19 @@ const customerWishlistRoute = customerWishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => customerRouteRoute,
 } as any)
+const customerPaymentCallbackRoute = customerPaymentCallbackRouteImport.update({
+  id: '/payment-callback',
+  path: '/payment-callback',
+  getParentRoute: () => customerRouteRoute,
+} as any)
 const customerOrdersRoute = customerOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => customerRouteRoute,
+} as any)
+const customerCheckoutRoute = customerCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => customerRouteRoute,
 } as any)
 const customerCartRoute = customerCartRouteImport.update({
@@ -160,7 +172,9 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof authSignUpRoute
   '/about': typeof customerAboutRoute
   '/cart': typeof customerCartRoute
+  '/checkout': typeof customerCheckoutRoute
   '/orders': typeof customerOrdersRoute
+  '/payment-callback': typeof customerPaymentCallbackRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -181,7 +195,9 @@ export interface FileRoutesByTo {
   '/sign-up': typeof authSignUpRoute
   '/about': typeof customerAboutRoute
   '/cart': typeof customerCartRoute
+  '/checkout': typeof customerCheckoutRoute
   '/orders': typeof customerOrdersRoute
+  '/payment-callback': typeof customerPaymentCallbackRoute
   '/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -204,7 +220,9 @@ export interface FileRoutesById {
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(customer)/about': typeof customerAboutRoute
   '/(customer)/cart': typeof customerCartRoute
+  '/(customer)/checkout': typeof customerCheckoutRoute
   '/(customer)/orders': typeof customerOrdersRoute
+  '/(customer)/payment-callback': typeof customerPaymentCallbackRoute
   '/(customer)/wishlist': typeof customerWishlistRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -228,7 +246,9 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/about'
     | '/cart'
+    | '/checkout'
     | '/orders'
+    | '/payment-callback'
     | '/wishlist'
     | '/admin/categories'
     | '/admin/dashboard'
@@ -249,7 +269,9 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/about'
     | '/cart'
+    | '/checkout'
     | '/orders'
+    | '/payment-callback'
     | '/wishlist'
     | '/admin/categories'
     | '/admin/dashboard'
@@ -271,7 +293,9 @@ export interface FileRouteTypes {
     | '/(auth)/sign-up'
     | '/(customer)/about'
     | '/(customer)/cart'
+    | '/(customer)/checkout'
     | '/(customer)/orders'
+    | '/(customer)/payment-callback'
     | '/(customer)/wishlist'
     | '/admin/categories'
     | '/admin/dashboard'
@@ -374,11 +398,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof customerWishlistRouteImport
       parentRoute: typeof customerRouteRoute
     }
+    '/(customer)/payment-callback': {
+      id: '/(customer)/payment-callback'
+      path: '/payment-callback'
+      fullPath: '/payment-callback'
+      preLoaderRoute: typeof customerPaymentCallbackRouteImport
+      parentRoute: typeof customerRouteRoute
+    }
     '/(customer)/orders': {
       id: '/(customer)/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof customerOrdersRouteImport
+      parentRoute: typeof customerRouteRoute
+    }
+    '/(customer)/checkout': {
+      id: '/(customer)/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof customerCheckoutRouteImport
       parentRoute: typeof customerRouteRoute
     }
     '/(customer)/cart': {
@@ -507,7 +545,9 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
 interface customerRouteRouteChildren {
   customerAboutRoute: typeof customerAboutRoute
   customerCartRoute: typeof customerCartRoute
+  customerCheckoutRoute: typeof customerCheckoutRoute
   customerOrdersRoute: typeof customerOrdersRoute
+  customerPaymentCallbackRoute: typeof customerPaymentCallbackRoute
   customerWishlistRoute: typeof customerWishlistRoute
   customerIndexRoute: typeof customerIndexRoute
   customerStoreIdRoute: typeof customerStoreIdRoute
@@ -517,7 +557,9 @@ interface customerRouteRouteChildren {
 const customerRouteRouteChildren: customerRouteRouteChildren = {
   customerAboutRoute: customerAboutRoute,
   customerCartRoute: customerCartRoute,
+  customerCheckoutRoute: customerCheckoutRoute,
   customerOrdersRoute: customerOrdersRoute,
+  customerPaymentCallbackRoute: customerPaymentCallbackRoute,
   customerWishlistRoute: customerWishlistRoute,
   customerIndexRoute: customerIndexRoute,
   customerStoreIdRoute: customerStoreIdRoute,

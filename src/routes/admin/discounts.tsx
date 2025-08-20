@@ -2,8 +2,11 @@ import { MetricCard } from "@components/admin/metric-card";
 import { NewDiscountModal } from "@components/admin/new-discount-modal";
 import PlusSignSquareIcon from "@components/icons/plus-size-square-icon";
 import { createFileRoute } from "@tanstack/react-router";
+import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
+import { Label } from "@ui/field";
 import { Heading } from "@ui/heading";
+import { Select } from "@ui/select";
 import { Table } from "@ui/table";
 import { format } from "date-fns";
 import z from "zod/v4";
@@ -126,6 +129,7 @@ function RouteComponent() {
 							<Table.Column isRowHeader>Code</Table.Column>
 							<Table.Column>Value</Table.Column>
 							<Table.Column>Description</Table.Column>
+							<Table.Column>Status</Table.Column>
 							<Table.Column>Minimum Order Amount</Table.Column>
 							<Table.Column>Maximum Discount Amount</Table.Column>
 							<Table.Column>Usage Limit</Table.Column>
@@ -134,7 +138,6 @@ function RouteComponent() {
 							<Table.Column>Expires At</Table.Column>
 						</Table.Header>
 						<Table.Body
-							dependencies={[Math.random()]}
 							items={data.items}
 							renderEmptyState={() => (
 								<div className="p-6 text-center">
@@ -154,6 +157,11 @@ function RouteComponent() {
 									<Table.Cell>{item.code}</Table.Cell>
 									<Table.Cell>{item.value}</Table.Cell>
 									<Table.Cell>{item.description}</Table.Cell>
+									<Table.Cell>
+										<Badge intent={item.isActive ? "success" : "danger"}>
+											{item.isActive ? "Active" : "Inactive"}
+										</Badge>
+									</Table.Cell>
 									<Table.Cell>
 										{item.minimumOrderAmount
 											? item.minimumOrderAmount
@@ -181,6 +189,79 @@ function RouteComponent() {
 						</Table.Body>
 					</Table>
 				</MetricCard>
+			</div>
+			{/* Pagination Controls */}
+			<div className="flex items-center justify-between mt-4 mb-8 gap-2">
+				<div className="text-sm text-muted-foreground text-muted-fg">
+					Page {search.page} of {data.pageCount} ·{" "}
+					<span className="text-fg font-medium">{data.total} Discounts</span>
+				</div>
+				<div className="flex items-center gap-2">
+					<Label className="text-sm">Rows per page</Label>
+					<Select
+						className="w-fit"
+						selectedKey={search.limit}
+						onSelectionChange={(key) => {
+							navigate({
+								search: (prev) => ({
+									...prev,
+									limit: key as 10 | 20 | 30 | 40 | 50,
+								}),
+							});
+						}}
+					>
+						<Select.Trigger className="w-20" />
+						<Select.List
+							items={[10, 20, 30, 40, 50].map((num) => ({
+								id: num,
+								value: num,
+							}))}
+							popover={{ className: "min-w-(--trigger-width)" }}
+						>
+							{(item) => (
+								<Select.Option key={item.id} textValue={item.value.toString()}>
+									{item.value}
+								</Select.Option>
+							)}
+						</Select.List>
+					</Select>
+				</div>
+				<div className="flex gap-2">
+					<Button
+						intent="outline"
+						size="sm"
+						isDisabled={search.page <= 1}
+						onPress={() => {
+							if (search.page > 1) {
+								navigate({
+									search: (prev) => ({
+										...prev,
+										page: search.page - 1,
+									}),
+								});
+							}
+						}}
+					>
+						Previous
+					</Button>
+					<Button
+						intent="outline"
+						size="sm"
+						isDisabled={search.page >= data.pageCount}
+						onPress={() => {
+							if (search.page < data.pageCount) {
+								navigate({
+									search: (prev) => ({
+										...prev,
+										page: search.page + 1,
+									}),
+								});
+							}
+						}}
+					>
+						Next
+					</Button>
+				</div>
 			</div>
 			<NewDiscountModal />
 		</div>

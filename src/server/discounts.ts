@@ -1,8 +1,10 @@
-import { adminMiddleware } from "@server/auth";
+import { adminMiddleware, isAuthenticatedMiddleware } from "@server/auth";
 import { db } from "@server/db";
 import { discount } from "@server/db/schema";
+import { getCartSubtotal } from "@server/utils/discounts";
 import { createServerFn } from "@tanstack/react-start";
-import { asc, sql } from "drizzle-orm";
+import { isAfter, isBefore, startOfDay } from "date-fns";
+import { asc, eq, sql } from "drizzle-orm";
 import z from "zod/v4";
 import { createDiscountSchema } from "@/lib/schema";
 
@@ -92,4 +94,80 @@ export const $createDiscount = createServerFn()
 			});
 
 		return createdDiscount;
+	});
+
+export const $validateDiscountCode = createServerFn()
+	.middleware([isAuthenticatedMiddleware])
+	.validator(
+		z.object({
+			code: z.string().min(2).max(100),
+		}),
+	)
+	.handler(async ({ data, context }) => {
+		const foundDiscount = await db
+			.select()
+			.from(discount)
+			.where(eq(discount.code, data.code))
+			.limit(1);
+
+		if (!foundDiscount || foundDiscount.length === 0) {
+			throw new Error("Discount code not found");
+		}
+
+		const retrievedDiscount = foundDiscount[0];
+
+		if (!retrievedDiscount.isActive) {
+			throw new Error("Discount code is not active");
+		}
+
+		if (
+			retrievedDiscount.startsAt &&
+			isBefore(startOfDay(new Date()), startOfDay(retrievedDiscount.startsAt))
+		) {
+			throw new Error("Discount code is not yet active");
+		}
+
+		if (
+			retrievedDiscount.expiresAt &&
+			isAfter(startOfDay(new Date()), startOfDay(retrievedDiscount.expiresAt))
+		) {
+			throw new Error("Discount code has expired");
+		}
+
+		if (
+			retrievedDiscount.usageLimit &&
+			retrievedDiscount.usageCount >= retrievedDiscount.usageLimit
+		) {
+			throw new Error("Discount code has reached its usage limit");
+		}
+
+		const { subtotal } = await getCartSubtotal(context.session.user.id);
+
+		if (
+			retrievedDiscount.minimumOrderAmount &&
+			subtotal < retrievedDiscount.minimumOrderAmount
+		) {
+			throw new Error("Discount code is not applicable");
+		}
+
+		let discountAmount = 0;
+		if (retrievedDiscount.type === "percentage") {
+			discountAmount = Math.floor((subtotal * retrievedDiscount.value) / 100);
+		} else {
+			discountAmount = retrievedDiscount.value;
+		}
+
+		if (retrievedDiscount.maximumDiscountAmount) {
+			discountAmount = Math.min(
+				discountAmount,
+				retrievedDiscount.maximumDiscountAmount,
+			);
+		}
+
+		discountAmount = Math.max(0, Math.min(discountAmount, subtotal));
+
+		return {
+			ok: true,
+			discountAmount,
+		};
 	});
