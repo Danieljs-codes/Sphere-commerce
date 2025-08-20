@@ -13,7 +13,6 @@ import { Loader } from "@/components/ui/loader";
 import { Note } from "@/components/ui/note";
 import { TextField } from "@/components/ui/text-field";
 import { getGuestCart } from "@/lib/carts";
-import { getSignedUserQueryOptions } from "@/lib/query-options";
 import { type SignInSchema, signInSchema } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +57,7 @@ function RouteComponent() {
 			await Promise.all([
 				mergeCartOnSignIn(),
 				queryClient.invalidateQueries({
-					queryKey: getSignedUserQueryOptions().queryKey,
+					refetchType: "all",
 				}),
 			]);
 			toast.success(`Signed in successfully! Welcome back, ${name}`);

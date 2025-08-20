@@ -87,7 +87,7 @@ export const $createCategory = createServerFn({
 })
 	.middleware([adminMiddleware])
 	.validator(z.instanceof(FormData))
-	.handler(async ({ data, context }) => {
+	.handler(async ({ data }) => {
 		const formData = Object.fromEntries(data.entries());
 
 		const parsedData = categoryForm.safeParse(formData);
@@ -113,7 +113,8 @@ export const $createCategory = createServerFn({
 			.toBuffer();
 
 		// Convert Buffer back to File for UploadThing
-		const processedFile = new File([outputBuffer], file.name, {
+		const uint8 = new Uint8Array(outputBuffer);
+		const processedFile = new File([uint8], file.name, {
 			type: "image/webp",
 		});
 

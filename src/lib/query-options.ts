@@ -9,6 +9,7 @@ import {
 	$getProducts,
 } from "@server/customers/product";
 import { $searchProducts } from "@server/customers/search";
+import { $getDiscounts } from "@server/discounts";
 import { $getOrder, $getOrders } from "@server/orders";
 import { $getOverviewData, $getRecentSalesData } from "@server/overview";
 import { $getProductPage, $getProductStats } from "@server/products";
@@ -224,4 +225,23 @@ export const getCartQueryOptions = () =>
 			return data;
 		},
 		staleTime: 30 * 2 * 1000,
+	});
+
+export const getDiscountsQueryOptions = ({
+	page,
+	limit,
+}: {
+	page: number;
+	limit: 10 | 20 | 30 | 40 | 50;
+}) =>
+	queryOptions({
+		queryKey: ["dashboard", "discounts", page, limit],
+		queryFn: async () => {
+			return await $getDiscounts({
+				data: {
+					limit,
+					page,
+				},
+			});
+		},
 	});

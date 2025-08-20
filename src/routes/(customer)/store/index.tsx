@@ -225,7 +225,7 @@ function RouteComponent() {
 													className={cn(
 														"text-muted-fg line-clamp-1 text-[13px]",
 														{
-															"line-clamp-2": !willTextWrap(product.name, 30),
+															"line-clamp-2": !willTextWrap(product.name, 20),
 														},
 													)}
 												>

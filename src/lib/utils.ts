@@ -52,7 +52,22 @@ export function stripHtmlTags(html: string): string {
  * @returns boolean indicating if text will likely wrap
  */
 export function willTextWrap(text: string, maxCharsPerLine = 40): boolean {
-  // Simple heuristic: if text is longer than maxCharsPerLine, it will likely wrap
-  return text.length > maxCharsPerLine;
+	// Simple heuristic: if text is longer than maxCharsPerLine, it will likely wrap
+	return text.length > maxCharsPerLine;
 }
 
+export function formatNairaShort(amountInKobo: number) {
+	// Convert to Naira
+	const naira = amountInKobo / 100;
+
+	// Ignore amounts less than ₦10,000
+	if (naira < 10_000) {
+		return null;
+	}
+
+	if (naira >= 1_000_000) {
+		return `${(naira / 1_000_000).toFixed(2).replace(/\.?0+$/, "")}M`;
+	}
+
+	return `${(naira / 1_000).toFixed(2).replace(/\.?0+$/, "")}K`;
+}

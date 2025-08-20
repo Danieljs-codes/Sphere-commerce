@@ -161,3 +161,81 @@ export const createCategorySchema = z.object({
 });
 
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>;
+
+export const createDiscountSchema = z
+	.object({
+		name: z.string().min(1, "Please enter a name for the discount"),
+		code: z
+			.string()
+			.min(1, "Please enter a code for the discount")
+			.max(30, "Code must be at most 30 characters"),
+		value: z
+			.number({
+				error: "Please enter a value for the discount",
+			})
+			.min(1, "Please enter a value for the discount"),
+		description: z
+			.string()
+			.min(1, "Please enter a description for the discount")
+			.max(40, "Description must be at most 60 characters")
+			.optional(),
+		dates: z
+			.object({
+				startsAt: z.date(),
+				expiresAt: z.date().optional().nullable(),
+			})
+			.superRefine(({ startsAt, expiresAt }, ctx) => {
+				// If there's an expiry date, it must be after startsAt and at least 1 hour later
+				if (expiresAt) {
+					if (expiresAt <= startsAt) {
+						ctx.addIssue({
+							code: "custom",
+							message: "Expiration date must be after the start date",
+							path: ["expiresAt"],
+						});
+					} else if (
+						expiresAt.getTime() - startsAt.getTime() <
+						60 * 60 * 1000
+					) {
+						ctx.addIssue({
+							code: "custom",
+							message:
+								"Expiration date must be at least 1 hour after the start date",
+							path: ["expiresAt"],
+						});
+					}
+				}
+			}),
+		minimumOrderAmount: z
+			.number()
+			.min(100, "Minimum order amount must be at least ₦100")
+			.or(z.null()),
+		maximumDiscountAmount: z
+			.number()
+			.min(100, "Maximum discount amount must be at least ₦100")
+			.or(z.null()),
+		usageLimit: z
+			.number()
+			.min(1, "Usage limit must be at least 1")
+			.or(z.null()),
+		type: z.enum(["percentage", "fixed_amount"], {
+			error: "Invalid discount type",
+		}),
+	})
+	.superRefine(({ type, value }, ctx) => {
+		if (type === "percentage" && (value < 1 || value > 100)) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Percentage value must be between 1 and 100",
+				path: ["value"],
+			});
+		} else if (type === "fixed_amount" && value < 100) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Fixed amount must be at least ₦100",
+				path: ["value"],
+			});
+		}
+	});
+
+export type CreateDiscountFormData = z.infer<typeof createDiscountSchema>;

@@ -33,7 +33,6 @@ import { useDebouncedValue } from "@/hooks/use-debounce-value";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import {
 	getCartQueryOptions,
-	getSignedUserQueryOptions,
 	searchProductsQueryOptions,
 } from "@/lib/query-options";
 import { cn, formatMoney, getNameInitials } from "@/lib/utils";
@@ -44,28 +43,6 @@ import { Avatar } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { CommandMenu } from "./ui/command-menu";
 import { Menu } from "./ui/menu";
-
-const categories = [
-	{ id: 1, label: "Electronics", url: "#" },
-	{ id: 2, label: "Fashion", url: "#" },
-	{ id: 3, label: "Home & Kitchen", url: "#" },
-	{ id: 4, label: "Sports", url: "#" },
-	{ id: 5, label: "Books", url: "#" },
-	{ id: 6, label: "Beauty & Personal Care", url: "#" },
-	{ id: 7, label: "Grocery", url: "#" },
-	{ id: 8, label: "Toys & Games", url: "#" },
-	{ id: 9, label: "Automotive", url: "#" },
-	{ id: 10, label: "Health & Wellness", url: "#" },
-];
-
-// Simple label → slug for query params like ?category=electronics
-function toSlug(label: string) {
-	return label
-		.toLowerCase()
-		.replace(/&/g, "and")
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
-}
 
 type AppNavbarProps = NavbarProps & {
 	user: User | null;
@@ -78,9 +55,7 @@ function UserMenu({ user }: { user: User }) {
 		mutationKey: ["auth", "sign-out"],
 		mutationFn: () => $signOut(),
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: getSignedUserQueryOptions().queryKey,
-			});
+			await queryClient.resetQueries();
 			await router.invalidate();
 		},
 		throwOnError: true, // This ensures errors are thrown to `toast.promise`
@@ -234,21 +209,12 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 						About
 					</NavbarItem>
 
-					{/* Quick category shortcuts (adjust or expand as needed) */}
-					{categories.slice(0, 4).map((c) => (
-						<NavbarItem
-							key={c.id}
-							// @ts-expect-error - To be fixed
-							to={`/ products?category=${toSlug(c.label)}`}
-						>
-							{c.label}
-						</NavbarItem>
-					))}
-
-					{/* Optional: restore later when routes exist
-          <NavbarItem to="/">Offers</NavbarItem>
-          <NavbarItem to="/">Orders</NavbarItem>
-          */}
+					<NavbarItem to="/orders" isCurrent={pathname === "/orders"}>
+						Orders
+					</NavbarItem>
+					<NavbarItem to="/cart" isCurrent={pathname === "/cart"}>
+						Cart
+					</NavbarItem>
 				</NavbarSection>
 				<NavbarSpacer />
 				<NavbarSection className="max-md:hidden">

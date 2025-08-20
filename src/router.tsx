@@ -1,5 +1,6 @@
 import { createRouter as createTanstackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { I18nProvider } from "react-aria-components";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -16,7 +17,7 @@ export const createRouter = () => {
 		Wrap: (props: { children: React.ReactNode }) => {
 			return (
 				<TanstackQuery.Provider {...rqContext}>
-					{props.children}
+					<I18nProvider locale="en-NG">{props.children}</I18nProvider>
 				</TanstackQuery.Provider>
 			);
 		},

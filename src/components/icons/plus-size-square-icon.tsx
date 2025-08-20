@@ -7,6 +7,7 @@ function PlusSignSquareIcon({ className, ...props }: ComponentProps<"svg">) {
 			viewBox="0 0 24 24"
 			xmlns="http://www.w3.org/2000/svg"
 			className={cn(className)}
+			data-slot="icon"
 			{...props}
 		>
 			<g fill="none">

@@ -1,8 +1,12 @@
 import { CartItemRow } from "@components/cart-item-row";
 import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@ui/button";
+import { Card } from "@ui/card";
+import { DescriptionList } from "@ui/description-list";
 import { Link } from "@ui/link";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import { getCartQueryOptions } from "@/lib/query-options";
+import { formatMoney, formatNairaShort } from "@/lib/utils";
 
 export const Route = createFileRoute("/(customer)/cart")({
 	component: RouteComponent,
@@ -12,9 +16,13 @@ function RouteComponent() {
 	const context = Route.useRouteContext();
 	const { data: cart } = useSuspenseQueryDeferred(getCartQueryOptions());
 
+	const totalPrice = cart.reduce((total, item) => {
+		return total + item.quantity * item.product.price;
+	}, 0);
+
 	return (
 		<div className="max-w-4xl mx-auto">
-			<div className="mb-6">
+			<div className="mb-8">
 				<h1 className="text-xl sm:text-2xl text-fg tracking-tight font-semibold leading-8">
 					Your shopping cart
 				</h1>
@@ -44,7 +52,50 @@ function RouteComponent() {
 						</Link>
 					</div>
 				</div>
-				<div></div>
+				<div>
+					<Card.Header className="mb-4">
+						<Card.Title>Order Summary</Card.Title>
+						<Card.Description>
+							Review your order details before proceeding to checkout.
+						</Card.Description>
+					</Card.Header>
+					<div>
+						<DescriptionList className="mb-4">
+							<DescriptionList.Term>Subtotal</DescriptionList.Term>
+							<DescriptionList.Details className="sm:text-right font-semibold">
+								{formatMoney(totalPrice)}{" "}
+								<span className="text-muted-fg ml-1">
+									({formatNairaShort(totalPrice)})
+								</span>
+							</DescriptionList.Details>
+							<DescriptionList.Term>Shipping</DescriptionList.Term>
+							<DescriptionList.Details className="sm:text-right font-semibold">
+								{formatMoney(0)}
+							</DescriptionList.Details>
+							<DescriptionList.Term>Tax (0%)</DescriptionList.Term>
+							<DescriptionList.Details className="sm:text-right font-semibold">
+								{formatMoney(0)}
+							</DescriptionList.Details>
+							<DescriptionList.Term>Total</DescriptionList.Term>
+							<DescriptionList.Details className="sm:text-right font-semibold">
+								{formatMoney(totalPrice)}{" "}
+								<span className="text-muted-fg ml-1">
+									({formatNairaShort(totalPrice)})
+								</span>
+							</DescriptionList.Details>
+						</DescriptionList>
+						<Button
+							className="w-full mb-2"
+							size="lg"
+							isDisabled={totalPrice === 0}
+						>
+							Checkout
+						</Button>
+						<p className="text-muted-fg text-sm/6 text-pretty max-w-xl text-center">
+							You can apply any discount code at checkout
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

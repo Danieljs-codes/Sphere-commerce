@@ -60,7 +60,7 @@ export function CartItemRow({ item, user }: CartItemRowProps) {
 	});
 
 	return (
-		<div className="relative flex md:items-center md:flex-row sm:py-6 py-4 gap-2 flex-col border-b last:border-b-0">
+		<div className="relative flex md:items-center md:flex-row sm:py-8 py-6 gap-2 flex-col border-b last:border-b-0">
 			<div className="flex items-center flex-grow gap-x-4">
 				<Avatar
 					className="sm:size-14 sm:*:size-14 size-12 *:size-12"
@@ -78,7 +78,7 @@ export function CartItemRow({ item, user }: CartItemRowProps) {
 				</Card.Header>
 			</div>
 
-			<div className="flex gap-x-2 justify-between items-center">
+			<div className="flex gap-x-2 justify-end md:justify-between items-center">
 				{/* Quantity controls */}
 				<div className="flex items-center overflow-hidden rounded-full border p-0.5 font-mono text-[0.8125rem] tabular-nums">
 					<Button

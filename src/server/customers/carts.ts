@@ -3,7 +3,7 @@ import { authMiddleware, isAuthenticatedMiddleware } from "@server/auth";
 import { db } from "@server/db";
 import { cart, cartItems, product } from "@server/db/schema";
 import { createServerFn } from "@tanstack/react-start";
-import { getCookie } from "@tanstack/react-start/server";
+import { deleteCookie, getCookie } from "@tanstack/react-start/server";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import z from "zod/v4";
 import { COOKIE_CART_KEY } from "@/lib/carts";
@@ -152,6 +152,8 @@ export const $mergeCartOnSignIn = createServerFn()
 			);
 
 			await Promise.all(allOperations);
+
+			deleteCookie(COOKIE_CART_KEY);
 
 			return {
 				success: true,
