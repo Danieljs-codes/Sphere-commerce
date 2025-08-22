@@ -216,7 +216,7 @@ export const $markAsShipped = createServerFn()
 	.handler(async ({ data }) => {
 		await db
 			.update(order)
-			.set({ status: "shipped" })
+			.set({ status: "shipped", shippedAt: new Date() })
 			.where(eq(order.id, data.id));
 
 		return {
@@ -235,7 +235,7 @@ export const $markAsDelivered = createServerFn()
 	.handler(async ({ data }) => {
 		await db
 			.update(order)
-			.set({ status: "delivered" })
+			.set({ status: "delivered", deliveredAt: new Date() })
 			.where(eq(order.id, data.id));
 
 		return {
