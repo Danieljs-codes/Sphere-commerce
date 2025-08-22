@@ -1,3 +1,5 @@
+import type { Order } from "@server/db/schema";
+import type { BadgeProps } from "@ui/badge";
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -71,3 +73,16 @@ export function formatNairaShort(amountInKobo: number) {
 
 	return `${(naira / 1_000).toFixed(2).replace(/\.?0+$/, "")}K`;
 }
+
+export const getBadgeIntentForOrderStatus = (
+	status: Order["status"],
+): BadgeProps["intent"] => {
+	switch (status) {
+		case "processing":
+			return "info";
+		case "shipped":
+			return "warning";
+		case "delivered":
+			return "success";
+	}
+};

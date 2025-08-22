@@ -274,7 +274,7 @@ export const order = sqliteTable(
 				zip: string;
 			}>()
 			.notNull(),
-		paymentReference: text("payment_reference"),
+		paymentReference: text("payment_reference").unique(),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date()),
@@ -292,6 +292,7 @@ export const order = sqliteTable(
 		index("orders_by_created_at").on(t.createdAt),
 		index("orders_by_discount").on(t.discountId),
 		index("orders_by_payment_reference").on(t.paymentReference),
+		index("orders_by_created_at_id").on(t.createdAt, t.id),
 	],
 );
 
@@ -348,5 +349,53 @@ export const scheduledTasks = sqliteTable(
 	],
 );
 
+export const payment = sqliteTable(
+	"payment",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => createId()),
+
+		orderId: text("order_id").references(() => order.id, {
+			onDelete: "cascade",
+		}),
+
+		reference: text("reference").notNull().unique(),
+
+		provider: text("provider").notNull().default("paystack"),
+
+		status: text("status", {
+			enum: ["pending", "success", "failed"],
+		})
+			.notNull()
+			.default("pending"),
+
+		amount: integer("amount").notNull(),
+
+		currency: text("currency").notNull().default("NGN"),
+
+		rawResponse: text("raw_response", { mode: "json" }).$type<
+			Record<string, unknown>
+		>(),
+
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date()),
+
+		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdateFn(() => new Date()),
+	},
+	(t) => [
+		index("payment_by_order").on(t.orderId),
+		uniqueIndex("payment_by_reference").on(t.reference),
+	],
+);
+
 export type User = InferSelectModel<typeof user>;
 export type Product = InferSelectModel<typeof product>;
+export type Category = InferSelectModel<typeof categories>;
+export type Order = InferSelectModel<typeof order>;
+export type Discount = InferSelectModel<typeof discount>;
+export type OrderItem = InferSelectModel<typeof orderItem>;

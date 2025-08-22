@@ -31,13 +31,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Sphere - Ecommerce Application",
+			},
+			{
+				name: "description",
+				content:
+					"An ecommerce application built with Tanstack Start, Tailwind CSS, and Sqlite.",
 			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "icon",
+				href: "/favicon.svg",
+				type: "image/svg+xml",
+			},
+			{
+				rel: "icon",
+				href: "/favicon.png",
+				type: "image/png",
 			},
 		],
 	}),

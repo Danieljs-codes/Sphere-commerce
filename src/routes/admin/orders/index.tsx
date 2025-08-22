@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import z from "zod/v4";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import { getOrdersQueryOptions } from "@/lib/query-options";
-import { formatMoney } from "@/lib/utils";
+import { formatMoney, getBadgeIntentForOrderStatus } from "@/lib/utils";
 
 const searchParamSchema = z.object({
 	page: z.number().min(1).default(1).catch(1),
@@ -153,13 +153,7 @@ function RouteComponent() {
 									<Table.Cell>
 										<Badge
 											className="capitalize"
-											intent={
-												order.status === "delivered"
-													? "success"
-													: order.status === "shipped"
-														? "info"
-														: "secondary"
-											}
+											intent={getBadgeIntentForOrderStatus(order.status)}
 										>
 											{order.status === "processing" && <IconPackageProcess />}
 											{order.status === "shipped" && <IconPackageMoving />}

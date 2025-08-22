@@ -35,6 +35,7 @@ import { Route as AdminProductsNewRouteImport } from './routes/admin/products/ne
 import { Route as AdminOrdersIdRouteImport } from './routes/admin/orders/$id'
 import { Route as customerStoreIdRouteImport } from './routes/(customer)/store/$id'
 import { ServerRoute as ApiUploadthingServerRouteImport } from './routes/api/uploadthing'
+import { ServerRoute as ApiPaymentsWebhookServerRouteImport } from './routes/api/payments/webhook'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -157,6 +158,12 @@ const ApiUploadthingServerRoute = ApiUploadthingServerRouteImport.update({
   path: '/api/uploadthing',
   getParentRoute: () => rootServerRouteImport,
 } as any)
+const ApiPaymentsWebhookServerRoute =
+  ApiPaymentsWebhookServerRouteImport.update({
+    id: '/api/payments/webhook',
+    path: '/api/payments/webhook',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -317,27 +324,31 @@ export interface RootRouteChildren {
 export interface FileServerRoutesByFullPath {
   '/api/uploadthing': typeof ApiUploadthingServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/payments/webhook': typeof ApiPaymentsWebhookServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/uploadthing': typeof ApiUploadthingServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/payments/webhook': typeof ApiPaymentsWebhookServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/uploadthing': typeof ApiUploadthingServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/payments/webhook': typeof ApiPaymentsWebhookServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/uploadthing' | '/api/auth/$'
+  fullPaths: '/api/uploadthing' | '/api/auth/$' | '/api/payments/webhook'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/uploadthing' | '/api/auth/$'
-  id: '__root__' | '/api/uploadthing' | '/api/auth/$'
+  to: '/api/uploadthing' | '/api/auth/$' | '/api/payments/webhook'
+  id: '__root__' | '/api/uploadthing' | '/api/auth/$' | '/api/payments/webhook'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiUploadthingServerRoute: typeof ApiUploadthingServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiPaymentsWebhookServerRoute: typeof ApiPaymentsWebhookServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -514,6 +525,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiUploadthingServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/payments/webhook': {
+      id: '/api/payments/webhook'
+      path: '/api/payments/webhook'
+      fullPath: '/api/payments/webhook'
+      preLoaderRoute: typeof ApiPaymentsWebhookServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -605,6 +623,7 @@ export const routeTree = rootRouteImport
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiUploadthingServerRoute: ApiUploadthingServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  ApiPaymentsWebhookServerRoute: ApiPaymentsWebhookServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

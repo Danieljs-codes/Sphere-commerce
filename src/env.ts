@@ -9,6 +9,7 @@ export const env = createEnv({
 		BETTER_AUTH_SECRET: z.string().min(1),
 		BETTER_AUTH_URL: z.url().min(1),
 		PAYSTACK_SECRET_KEY: z.string().min(1),
+		CURSOR_SIGNING_KEY: z.string().min(1),
 	},
 
 	/**
@@ -34,6 +35,7 @@ export const env = createEnv({
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
 		VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+		CURSOR_SIGNING_KEY: process.env.CURSOR_SIGNING_KEY,
 	},
 
 	/**
