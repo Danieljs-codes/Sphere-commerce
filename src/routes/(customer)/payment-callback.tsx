@@ -13,7 +13,7 @@ export const Route = createFileRoute("/(customer)/payment-callback")({
 			throw new Error("Reference is required for payment callback");
 		}
 
-		await $handlePayment({
+		const response = await $handlePayment({
 			data: {
 				trxref: deps.trxref,
 				reference: deps.reference,

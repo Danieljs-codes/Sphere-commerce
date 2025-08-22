@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
-import { denyImports, envOnlyMacros } from "vite-env-only";
+import { envOnlyMacros } from "vite-env-only";
 import { ngrok } from "vite-plugin-ngrok";
 import removeConsole from "vite-plugin-remove-console";
 import viteTsConfigPaths from "vite-tsconfig-paths";
@@ -32,11 +32,11 @@ const config = defineConfig({
 		viteReact(),
 		removeConsole(),
 		envOnlyMacros(),
-		denyImports({
-			client: {
-				files: ["**/server/**/*"],
-			},
-		}),
+		// denyImports({
+		// 	client: {
+		// 		files: ["**/server/**/*"],
+		// 	},
+		// }),
 		ngrok({
 			authtoken: NGROK_AUTH_TOKEN,
 			domain: "feline-usable-stingray.ngrok-free.app",
