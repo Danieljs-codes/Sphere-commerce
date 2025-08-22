@@ -68,7 +68,7 @@ function RouteComponent() {
 			<AppSidebar user={user.user} collapsible="dock" />
 			<SidebarInset>
 				<AppSidebarNav title={title} user={user.user} />
-				<Container className="p-4 lg:p-6 max-w- mx-auto py-0">
+				<Container className="p-4 lg:p-6 max-w-[96rem] mx-auto py-0">
 					<Outlet />
 				</Container>
 			</SidebarInset>

@@ -254,7 +254,6 @@ function RouteComponent() {
 								onChange={(value) => setDiscountCode(value.toUpperCase())}
 							/>
 						</div>
-
 						<Button
 							size="md"
 							className="mt-6 w-full"

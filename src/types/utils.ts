@@ -73,7 +73,7 @@ export const getSidebarState = createIsomorphicFn()
 		const sidebarState = getCookie("sidebar_state");
 
 		if (!sidebarState) return false;
-		return JSON.parse(sidebarState);
+		return JSON.parse(sidebarState) as boolean;
 	})
 	.client(() => {
 		const sidebarState = document.cookie
@@ -81,5 +81,5 @@ export const getSidebarState = createIsomorphicFn()
 			.find((row) => row.startsWith("sidebar_state="))
 			?.split("=")[1];
 		if (!sidebarState) return false;
-		return JSON.parse(decodeURIComponent(sidebarState));
+		return JSON.parse(decodeURIComponent(sidebarState)) as boolean;
 	});

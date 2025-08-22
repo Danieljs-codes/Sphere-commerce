@@ -1,26 +1,26 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "tailwind-merge";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  constrained?: boolean
-  ref?: React.RefObject<HTMLDivElement>
+	constrained?: boolean;
+	ref?: React.RefObject<HTMLDivElement>;
 }
 
 const Container = ({
-  className,
-  constrained = false,
-  ref,
-  ...props
+	className,
+	constrained = false,
+	ref,
+	...props
 }: ContainerProps) => (
-  <div
-    className={twMerge(
-      'mx-auto w-full container',
-      constrained ? 'sm:px-6' : 'px-4 sm:px-6',
-      className,
-    )}
-    {...props}
-    ref={ref}
-  />
-)
+	<div
+		className={twMerge(
+			"mx-auto w-full",
+			constrained ? "sm:px-6" : "px-4 sm:px-6",
+			className,
+		)}
+		{...props}
+		ref={ref}
+	/>
+);
 
-export type { ContainerProps }
-export { Container }
+export type { ContainerProps };
+export { Container };

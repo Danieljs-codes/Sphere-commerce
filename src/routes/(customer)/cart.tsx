@@ -1,6 +1,6 @@
 import { CartItemRow } from "@components/cart-item-row";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@ui/button";
+import { buttonStyles } from "@ui/button";
 import { Card } from "@ui/card";
 import { DescriptionList } from "@ui/description-list";
 import { Link } from "@ui/link";
@@ -84,13 +84,13 @@ function RouteComponent() {
 								</span>
 							</DescriptionList.Details>
 						</DescriptionList>
-						<Button
-							className="w-full mb-2"
-							size="lg"
+						<Link
+							className={buttonStyles({ className: "w-full mb-2", size: "lg" })}
+							to="/checkout"
 							isDisabled={totalPrice === 0}
 						>
 							Checkout
-						</Button>
+						</Link>
 						<p className="text-muted-fg text-sm/6 text-pretty max-w-xl text-center">
 							You can apply any discount code at checkout
 						</p>

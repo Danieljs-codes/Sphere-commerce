@@ -23,7 +23,7 @@ export const $getUserOrderHistory = createServerFn()
 			limit: z.number().min(1).max(100).default(10),
 		}),
 	)
-	.handler(async ({ data }) => {
+	.handler(async ({ data, context }) => {
 		const { cursor, limit } = data;
 
 		const decodedCursor = cursor ? decodeCursor(cursor) : null;
@@ -36,14 +36,19 @@ export const $getUserOrderHistory = createServerFn()
 			.leftJoin(discount, eq(order.discountId, discount.id))
 			.where(
 				decodedCursor
-					? or(
-							gt(order.createdAt, new Date(decodedCursor.createdAt)),
-							and(
-								eq(order.createdAt, new Date(decodedCursor.createdAt)),
-								gt(order.id, decodedCursor.id),
+					? and(
+							// ensure we only fetch orders for the signed in user
+							eq(order.userId, context.session.user.id),
+							or(
+								gt(order.createdAt, new Date(decodedCursor.createdAt)),
+								and(
+									eq(order.createdAt, new Date(decodedCursor.createdAt)),
+									gt(order.id, decodedCursor.id),
+								),
 							),
 						)
-					: undefined,
+					: // no cursor — still restrict to the signed in user's orders
+						eq(order.userId, context.session.user.id),
 			)
 			.orderBy(asc(order.createdAt), asc(order.id))
 			.limit(
