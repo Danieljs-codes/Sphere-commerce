@@ -93,8 +93,15 @@ export async function processPaymentOrder(
 					shippingFee: metadata.shippingFee,
 					taxAmount: metadata.taxAmount,
 					total: metadata.total,
-					discountId: metadata.discountId ?? null,
-					discountCode: metadata.discountCode ?? null,
+					discountId:
+						typeof metadata.discountId === "string" &&
+						metadata.discountId.length > 0
+							? metadata.discountId
+							: null,
+					discountCode:
+						metadata.discountId && metadata.discountCode
+							? metadata.discountCode
+							: null,
 					status: "processing",
 					shippingAddress,
 					paymentReference: reference,

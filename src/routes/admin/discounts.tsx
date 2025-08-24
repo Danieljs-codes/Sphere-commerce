@@ -159,7 +159,14 @@ function RouteComponent() {
 									<Table.Cell>{item.description}</Table.Cell>
 									<Table.Cell>
 										<Badge intent={item.isActive ? "success" : "danger"}>
-											{item.isActive ? "Active" : "Inactive"}
+											{(() => {
+												const now = new Date();
+												if (item.expiresAt && item.expiresAt < now)
+													return "Expired";
+												if (item.startsAt && item.startsAt > now)
+													return "Scheduled";
+												return item.isActive ? "Active" : "Inactive";
+											})()}
 										</Badge>
 									</Table.Cell>
 									<Table.Cell>
