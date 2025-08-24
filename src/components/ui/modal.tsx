@@ -11,6 +11,7 @@ import {
 	Modal as ModalPrimitive,
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 import {
 	Dialog,
 	DialogBody,
@@ -61,18 +62,22 @@ const ModalContent = ({
 	...props
 }: ModalContentProps) => {
 	const isDismissable = isDismissableInternal ?? role !== "alertdialog";
+	const { className: overlayClassName } = overlay ?? {};
 
 	return (
 		<ModalOverlay
 			data-slot="modal-overlay"
 			isDismissable={isDismissable}
 			className={({ isExiting, isEntering }) =>
-				twJoin(
-					"fixed inset-0 z-50 h-(--visual-viewport-height,100vh) bg-black/15 md:p-4",
-					"grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
-					isEntering && "fade-in animate-in duration-300",
-					isExiting && "fade-out animate-out duration-200",
-					isBlurred && "backdrop-blur-sm backdrop-filter",
+				cn(
+					twJoin(
+						"fixed inset-0 z-50 h-(--visual-viewport-height,100vh) bg-black/15 md:p-4",
+						"grid grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr]",
+						isEntering && "fade-in animate-in duration-300",
+						isExiting && "fade-out animate-out duration-200",
+						isBlurred && "backdrop-blur-sm backdrop-filter",
+					),
+					overlayClassName,
 				)
 			}
 			{...props}

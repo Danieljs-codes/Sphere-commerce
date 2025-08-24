@@ -11,6 +11,9 @@
 	--prose-hr-color: var(--border);
 	--prose-blockquote-border-color: var(--border);
 
+	/* Add configurable line-height. Users may override --prose-line-height on the element or with helper classes below */
+	--prose-line-height: 1.5;
+
 	&:where(.dark, .dark *) {
 		--prose-color: var(--fg);
 		--prose-strong-color: var(--fg);
@@ -25,8 +28,10 @@
 	}
 
 	color: var(--prose-color);
+
+	/* Use the configured line-height variable (falls back to 1.5 if not set) */
 	font-size: var(--text-sm);
-	line-height: 1.5;
+	line-height: var(--prose-line-height, 1.5);
 
 	/* Basic spacing between elements */
 	*:where(:not(.not-prose, .not-prose *))

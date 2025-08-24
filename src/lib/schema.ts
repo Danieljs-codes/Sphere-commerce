@@ -282,3 +282,58 @@ export const checkoutSchema = z
 	});
 
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;
+
+export const newReviewSchema = z.object({
+	rating: z
+		.union([
+			z.literal(0),
+			z.literal(1),
+			z.literal(2),
+			z.literal(3),
+			z.literal(4),
+			z.literal(5),
+		])
+
+		.transform((val, ctx) => {
+			if (![1, 2, 3, 4, 5].includes(val)) {
+				ctx.addIssue({
+					code: "custom",
+					message: "Rating must be between 1 and 5",
+				});
+			}
+
+			return val as 1 | 2 | 3 | 4 | 5;
+		}),
+	review: z
+		.string()
+		.min(10)
+		.max(1000)
+		.refine((s) => s.trim().length >= 10, {
+			message: "Review must not be empty or only whitespace",
+		})
+		.refine((s) => !/[<>]/.test(s), {
+			message: "HTML tags are not allowed in the review",
+		}),
+	image: z
+		.array(
+			z.file().superRefine((file, ctx) => {
+				if (file.size > 2 * 1024 * 1024) {
+					ctx.addIssue({
+						code: "custom",
+						message: "Image must be less than 2MB",
+					});
+				}
+				if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+					ctx.addIssue({
+						code: "custom",
+						message: "Invalid image type. Only JPG, PNG, and WEBP are allowed.",
+					});
+				}
+			}),
+		)
+		.max(4, "You can upload up to 4 images")
+		.default([]),
+});
+
+export type NewReviewFormDataIn = z.input<typeof newReviewSchema>;
+export type NewReviewFormDataOut = z.output<typeof newReviewSchema>;

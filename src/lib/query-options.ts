@@ -7,6 +7,7 @@ import { $getCart } from "@server/customers/carts";
 import { $getUserOrderHistory } from "@server/customers/orders";
 import {
 	$getHighestAndLowestPrice,
+	$getProductById,
 	$getProducts,
 } from "@server/customers/product";
 import { $searchProducts } from "@server/customers/search";
@@ -263,5 +264,15 @@ export const getUserOrderHistoryQueryOptions = ({ limit }: { limit: number }) =>
 		initialPageParam: null as string | null,
 		getNextPageParam: (lastPage) => {
 			return lastPage.nextCursor;
+		},
+	});
+
+export const getProductByIdQueryOptions = (id: string) =>
+	queryOptions({
+		queryKey: ["product", id],
+		queryFn: async () => {
+			const data = await $getProductById({ data: { id } });
+
+			return data;
 		},
 	});

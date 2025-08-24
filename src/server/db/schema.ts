@@ -157,6 +157,13 @@ export const product = sqliteTable(
 			.notNull()
 			.$defaultFn(() => new Date())
 			.$onUpdateFn(() => new Date()),
+		avgRating: integer("avg_rating").notNull().default(0),
+		totalReviews: integer("total_reviews").notNull().default(0),
+		count1StarReviews: integer("count_1_star_reviews").notNull().default(0),
+		count2StarReviews: integer("count_2_star_reviews").notNull().default(0),
+		count3StarReviews: integer("count_3_star_reviews").notNull().default(0),
+		count4StarReviews: integer("count_4_star_reviews").notNull().default(0),
+		count5StarReviews: integer("count_5_star_reviews").notNull().default(0),
 	},
 	(t) => [
 		uniqueIndex("products_by_slug").on(t.slug),
@@ -390,6 +397,35 @@ export const payment = sqliteTable(
 	(t) => [
 		index("payment_by_order").on(t.orderId),
 		uniqueIndex("payment_by_reference").on(t.reference),
+	],
+);
+
+export const review = sqliteTable(
+	"review",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => createId()),
+		productId: text("product_id")
+			.references(() => product.id)
+			.notNull(),
+		userId: text("user_id")
+			.references(() => user.id)
+			.notNull(),
+		rating: integer("rating").notNull(),
+		comment: text("comment").notNull(),
+		images: text("images", { mode: "json" }).$type<string[]>(),
+		createdAt: integer("created_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date()),
+		updatedAt: integer("updated_at", { mode: "timestamp" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdateFn(() => new Date()),
+	},
+	(t) => [
+		index("reviews_by_product").on(t.productId),
+		index("reviews_by_user").on(t.userId),
 	],
 );
 

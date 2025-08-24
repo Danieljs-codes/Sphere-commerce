@@ -198,13 +198,17 @@ function RouteComponent() {
 							{productsPage.items.map((product) => (
 								<div key={product.id} className="group relative">
 									<div className="group-hover:-translate-x-0 absolute top-2 right-2 z-10 flex translate-x-2 flex-col gap-y-1 opacity-0 transition ease-linear group-hover:opacity-100">
-										<Button size="sq-xs" intent="secondary" isCircle>
+										<Button
+											size="sq-xs"
+											intent="secondary"
+											className="rounded-full"
+										>
 											<IconHeartFilled data-slot="icon" />
 										</Button>
 										<Button
 											size="sq-xs"
 											intent="secondary"
-											isCircle
+											className="rounded-full"
 											onPress={() => setProduct(product)}
 										>
 											<IconEyeFilled data-slot="icon" />

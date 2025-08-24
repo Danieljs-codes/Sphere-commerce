@@ -57,28 +57,21 @@ export const PreviewProductModal = ({
 		if (!product) return;
 
 		const existingItem = cart.find((item) => item.product.id === product.id);
+		const currentQuantity = existingItem ? existingItem.quantity : 0;
+		const newQuantity = currentQuantity + 1;
 
-		// If product exists in cart and we're trying to add more than available
-		if (existingItem) {
-			if (existingItem.quantity >= product.stock) {
-				toast.error(
-					`Cannot add more. Only ${product.stock} ${product.name} available in stock.`,
-				);
-				return;
-			}
-
-			if (existingItem.quantity + 1 > product.stock) {
-				const available = product.stock - existingItem.quantity;
-				toast.error(
-					`Only ${available} more ${product.name} available in stock.`,
-				);
-				return;
-			}
+		if (product.stock <= 0) {
+			toast.error(`${product.name} is out of stock.`);
+			return;
 		}
 
-		// If product doesn't exist in cart but is out of stock
-		if (!existingItem && product.stock <= 0) {
-			toast.error(`${product.name} is out of stock.`);
+		if (newQuantity > product.stock) {
+			const available = product.stock - currentQuantity;
+			if (available <= 0) {
+				toast.error(`Cannot add more. Only ${product.stock} ${product.name} available in stock.`);
+			} else {
+				toast.error(`Only ${available} more ${product.name} available in stock.`);
+			}
 			return;
 		}
 
@@ -198,19 +191,22 @@ export const PreviewProductModal = ({
 										onPress={handleAddToCart}
 										isPending={isPending}
 										isDisabled={
+											!product ||
 											cart.some(
 												(item) =>
-													item.product.id === product?.id &&
-													item.quantity >= product?.stock,
-											) || product?.stock <= 0
+													item.product.id === product.id &&
+													item.quantity >= product.stock
+											) || product.stock <= 0
 										}
 									>
 										{isPending ? <Loader /> : <IconAddToCartFill />}
-										{product?.stock <= 0
-											? "Out of Stock"
-											: isPending
-												? "Adding to cart..."
-												: "Add to cart"}
+										{!product
+											? "Unavailable"
+											: product.stock <= 0
+												? "Out of Stock"
+												: isPending
+													? "Adding to cart..."
+													: "Add to cart"}
 									</Button>
 									<Link
 										to="/store/$id"

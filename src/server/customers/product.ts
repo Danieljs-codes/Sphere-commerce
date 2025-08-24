@@ -1,8 +1,10 @@
 import { db } from "@server/db";
-import { categories, product } from "@server/db/schema";
+import { categories, product, review, user } from "@server/db/schema";
+import { notFound, redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, gt, isNull, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, lte, ne, or, sql } from "drizzle-orm";
 import z from "zod/v4";
+import { setFlashCookie } from "@/types/utils";
 
 export const $getHighestAndLowestPrice = createServerFn().handler(async () => {
 	const now = new Date();
@@ -74,10 +76,8 @@ export const $getProducts = createServerFn()
 			where = and(where, sql`${product.price} <= ${maxPrice}`);
 		}
 
-		// Category filter (by category name, case-insensitive)
 		const hasCategories = (data.category ?? []).length > 0;
 
-		// Count total with the same filters
 		const [countRow] = await (hasCategories
 			? db
 					.select({ total: sql<number>`count(*)` })
@@ -86,7 +86,6 @@ export const $getProducts = createServerFn()
 					.where(
 						and(
 							where,
-							// LOWER(categories.name) IN (...)
 							sql`LOWER(${categories.name}) IN (${sql.join(
 								(data.category ?? []).map((c) => c.toLowerCase()),
 								sql`, `,
@@ -176,5 +175,84 @@ export const $getProducts = createServerFn()
 			pages: Math.max(1, Math.ceil(total / limit)),
 			hasNext: offset + items.length < total,
 			hasPrev: page > 1,
+		};
+	});
+
+export const $getProductById = createServerFn()
+	.validator(
+		z.object({
+			id: z.string().min(1),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const [validProduct] = await db
+			.select()
+			.from(product)
+			.leftJoin(categories, eq(categories.id, product.categoryId))
+			.where(and(eq(product.id, data.id), eq(product.status, "active")))
+			.limit(1);
+
+		if (!validProduct) {
+			setFlashCookie({
+				intent: "error",
+				message: "Product not found",
+			});
+
+			throw notFound();
+		}
+
+		if (validProduct.product.stock <= 0) {
+			setFlashCookie({
+				intent: "error",
+				message: "Product is out of stock",
+			});
+
+			throw redirect({
+				to: "/store",
+			});
+		}
+
+		// Get 4 product from the same category, excluding the current product
+		const relatedProducts = await db
+			.select()
+			.from(product)
+			.where(
+				and(
+					validProduct.product.categoryId
+						? eq(product.categoryId, validProduct.product.categoryId)
+						: undefined,
+					ne(product.id, validProduct.product.id),
+				),
+			)
+			.limit(4);
+
+		// Get reviews for the valid product
+		const reviews = await db
+			.select()
+			.from(review)
+			.innerJoin(user, eq(user.id, review.userId))
+			.where(eq(review.productId, validProduct.product.id))
+			.orderBy(desc(review.createdAt))
+			.limit(5);
+
+		const formattedReviews = reviews.map((review) => ({
+			id: review.review.id,
+			rating: review.review.rating,
+			comment: review.review.comment,
+			createdAt: review.review.createdAt,
+			images: review.review.images,
+			author: {
+				id: review.user.id,
+				name: review.user.name,
+				avatar: review.user.image,
+				image: review.user.image,
+			},
+		}));
+
+		return {
+			product: validProduct.product,
+			relatedProducts,
+			reviews: formattedReviews,
+			category: validProduct.categories,
 		};
 	});
