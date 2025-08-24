@@ -4,7 +4,7 @@ import { StarRating } from "@components/star-rating";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconCircleXFill } from "@intentui/icons";
 import { $createProductReview } from "@server/customers/reviews";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { Button } from "@ui/button";
 import { DropZone } from "@ui/drop-zone";
@@ -19,6 +19,7 @@ import {
 } from "react-aria-components";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { getProductByIdQueryOptions } from "@/lib/query-options";
 import {
 	type NewReviewFormDataIn,
 	type NewReviewFormDataOut,
@@ -26,6 +27,7 @@ import {
 } from "@/lib/schema";
 
 export const NewReviewModal = () => {
+	const queryClient = useQueryClient();
 	const search = useSearch({ from: "/(customer)/store/$id" });
 	const navigate = useNavigate({ from: "/store/$id" });
 	const params = useParams({ from: "/(customer)/store/$id" });
@@ -57,7 +59,10 @@ export const NewReviewModal = () => {
 			});
 		},
 		onError: (error) => toast.error(error.message),
-		onSuccess: () => {
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: getProductByIdQueryOptions(params.id).queryKey,
+			});
 			reset();
 			toast.success("Review submitted successfully");
 			navigate({ search: (prev) => ({ ...prev, newReview: false }) });
