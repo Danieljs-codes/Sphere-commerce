@@ -120,6 +120,8 @@ function RouteComponent() {
 							isPending={isPending}
 							onPress={async () => {
 								const isValid = await form.trigger();
+								console.log(isValid, form.getValues());
+
 								if (!isValid) {
 									/* toast + return */
 									return;

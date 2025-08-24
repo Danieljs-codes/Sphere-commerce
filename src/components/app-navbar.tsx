@@ -49,6 +49,7 @@ type AppNavbarProps = NavbarProps & {
 };
 
 function UserMenu({ user }: { user: User }) {
+	const navigate = useNavigate();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { mutateAsync: signOut } = useMutation({
@@ -56,6 +57,7 @@ function UserMenu({ user }: { user: User }) {
 		mutationFn: () => $signOut(),
 		onSuccess: async () => {
 			await queryClient.resetQueries();
+			await navigate({ to: "/" });
 			await router.invalidate();
 		},
 		throwOnError: true, // This ensures errors are thrown to `toast.promise`

@@ -63,8 +63,8 @@ export const productDetailsSchema = z.object({
 			z
 				.file()
 				.refine(
-					(file) => file.size <= 2 * 1024 * 1024, // 2MB
-					{ message: "Each image must be less than 2MB" },
+					(file) => file.size <= 10 * 1024 * 1024, // 10MB
+					{ message: "Each image must be less than 10MB" },
 				)
 				.mime(["image/png", "image/jpeg", "image/webp"]),
 		)
@@ -317,10 +317,10 @@ export const newReviewSchema = z.object({
 	image: z
 		.array(
 			z.file().superRefine((file, ctx) => {
-				if (file.size > 2 * 1024 * 1024) {
+				if (file.size > 10 * 1024 * 1024) {
 					ctx.addIssue({
 						code: "custom",
-						message: "Image must be less than 2MB",
+						message: "Image must be less than 10MB",
 					});
 				}
 				if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
