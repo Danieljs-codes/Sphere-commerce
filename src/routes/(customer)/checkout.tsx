@@ -260,6 +260,7 @@ function RouteComponent() {
 							aria-label={`Pay ${formatMoney(totalPrice)} with Paystack`}
 							type="submit"
 							isPending={isCheckingOut}
+							isDisabled={cart.length === 0}
 						>
 							{isCheckingOut ? <Loader /> : "Proceed to Payment"}
 						</Button>

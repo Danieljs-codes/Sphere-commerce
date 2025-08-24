@@ -12,7 +12,7 @@ import {
 } from "@server/db/schema";
 import { decodeCursor, encodeCursor } from "@server/utils/orders";
 import { createServerFn } from "@tanstack/react-start";
-import { and, asc, eq, gt, or } from "drizzle-orm";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 import z from "zod/v4";
 
 export const $getUserOrderHistory = createServerFn()
@@ -40,17 +40,17 @@ export const $getUserOrderHistory = createServerFn()
 							// ensure we only fetch orders for the signed in user
 							eq(order.userId, context.session.user.id),
 							or(
-								gt(order.createdAt, new Date(decodedCursor.createdAt)),
+								lt(order.createdAt, new Date(decodedCursor.createdAt)),
 								and(
 									eq(order.createdAt, new Date(decodedCursor.createdAt)),
-									gt(order.id, decodedCursor.id),
+									lt(order.id, decodedCursor.id),
 								),
 							),
 						)
 					: // no cursor — still restrict to the signed in user's orders
 						eq(order.userId, context.session.user.id),
 			)
-			.orderBy(asc(order.createdAt), asc(order.id))
+			.orderBy(desc(order.createdAt), desc(order.id))
 			.limit(
 				limit + 1, // Fetch one extra to determine if there's a next page
 			);

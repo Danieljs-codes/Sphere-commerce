@@ -158,16 +158,29 @@ function RouteComponent() {
 									<Table.Cell>{item.value}</Table.Cell>
 									<Table.Cell>{item.description}</Table.Cell>
 									<Table.Cell>
-										<Badge intent={item.isActive ? "success" : "danger"}>
-											{(() => {
-												const now = new Date();
-												if (item.expiresAt && item.expiresAt < now)
-													return "Expired";
-												if (item.startsAt && item.startsAt > now)
-													return "Scheduled";
-												return item.isActive ? "Active" : "Inactive";
-											})()}
-										</Badge>
+										{(() => {
+											const now = new Date();
+											const usageCount = item.usageCount ?? 0;
+											const usageLimit = item.usageLimit ?? null;
+											const isUsageExceeded =
+												usageLimit !== null && usageCount >= usageLimit;
+
+											if (item.expiresAt && item.expiresAt < now) {
+												return <Badge intent="danger">Expired</Badge>;
+											}
+											if (isUsageExceeded) {
+												return (
+													<Badge intent="danger">Usage Limit Reached</Badge>
+												);
+											}
+											if (item.startsAt && item.startsAt > now) {
+												return <Badge intent="secondary">Scheduled</Badge>;
+											}
+											if (!item.isActive) {
+												return <Badge intent="danger">Inactive</Badge>;
+											}
+											return <Badge intent="success">Active</Badge>;
+										})()}
 									</Table.Cell>
 									<Table.Cell>
 										{item.minimumOrderAmount
