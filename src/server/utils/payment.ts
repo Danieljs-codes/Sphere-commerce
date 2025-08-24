@@ -35,7 +35,7 @@ export async function processPaymentOrder(
 	}
 
 	try {
-		await db.transaction(async (tx) => {
+		const res = await db.transaction(async (tx) => {
 			// Check if payment has already been processed
 			const existingPayment = await tx
 				.select({ id: payment.id, status: payment.status })

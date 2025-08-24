@@ -60,7 +60,7 @@ function UserMenu({ user }: { user: User }) {
 			await navigate({ to: "/" });
 			await router.invalidate();
 		},
-		throwOnError: true, // This ensures errors are thrown to `toast.promise`
+		throwOnError: true,
 	});
 
 	return (
@@ -237,7 +237,7 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 					>
 						{cart.length > 0 && (
 							<span className="absolute text-white bg-primary text-[10px] rounded-full size-4 -right-1 -top-1.5 flex items-center justify-center">
-								{cart.length}
+								{cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)}
 							</span>
 						)}
 						<IconShoppingBag />
