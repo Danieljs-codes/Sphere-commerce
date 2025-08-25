@@ -77,8 +77,8 @@ export const getProductPageQueryOptions = ({
 		queryFn: async () => {
 			const data = await $getProductPage({
 				data: {
-					offset: 0,
-					numItems: 10,
+					offset,
+					numItems,
 					filter: undefined,
 				},
 			});

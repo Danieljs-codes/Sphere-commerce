@@ -5,7 +5,7 @@ import { product } from "@server/db/schema";
 import { utapi } from "@server/uploadthing";
 import { createServerFn } from "@tanstack/react-start";
 import { encode } from "blurhash";
-import { and, eq, sql } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 import sharp from "sharp";
 import z from "zod/v4";
 import { productFormBackendSchema } from "@/lib/schema";
@@ -64,10 +64,19 @@ export const $getProductPage = createServerFn()
 
 		// 4. hasNextPage calculation
 		const hasNextPage = results.length > numItems;
+		const [totalProducts] = await db
+			.select({ count: count() })
+			.from(product)
+			.where(
+				filter ? and(whereClause, eq(product.status, filter)) : whereClause,
+			);
+
+		// 5. Return results and hasNextPage
 
 		return {
 			page: results.slice(0, numItems),
 			hasNextPage,
+			totalProducts: totalProducts.count,
 		};
 	});
 

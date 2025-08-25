@@ -37,7 +37,16 @@ const searchParamSchema = z.object({
 		.optional()
 		.catch(undefined),
 	page: z.number().int().positive().default(1).catch(1),
-	numItems: z.number().int().positive().default(10).catch(10),
+	numItems: z
+		.union([
+			z.literal(10),
+			z.literal(20),
+			z.literal(30),
+			z.literal(40),
+			z.literal(50),
+		])
+		.default(10)
+		.catch(10),
 });
 
 export const Route = createFileRoute("/admin/products/")({
@@ -69,7 +78,7 @@ function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const search = Route.useSearch();
 	const { data } = useSuspenseQueryDeferred(getProductStatsQueryOptions());
-	const { data: productsData } = useSuspenseQueryDeferred(
+	const { data: productsData, isSuspending } = useSuspenseQueryDeferred(
 		getProductPageQueryOptions({
 			offset: search.page * search.numItems - search.numItems,
 			numItems: search.numItems,
@@ -265,8 +274,26 @@ function RouteComponent() {
 				{data.totalProducts > 0 && (
 					<div className="flex items-center justify-between py-4">
 						<div className="text-sm text-muted-fg">
-							Showing {productsData.page.length} of {data.totalProducts}{" "}
-							products
+							{/* Compute and show current item range and page info */}
+							{(() => {
+								const perPage = search.numItems ?? 10;
+								const currentPage = search.page ?? 1;
+								const total = data.totalProducts ?? 0;
+								const totalPages = Math.max(1, Math.ceil(total / perPage));
+								const startIndex = (currentPage - 1) * perPage + 1;
+								const endIndex = Math.min(
+									startIndex + productsData.page.length - 1,
+									total,
+								);
+
+								return (
+									<div className="flex items-center gap-2">
+										Showing {startIndex} to {endIndex} of {total} products —
+										Page {currentPage} of {totalPages}
+										{isSuspending && <Loader className="size-4" />}
+									</div>
+								);
+							})()}
 						</div>
 						<div className="flex items-center gap-2">
 							<Button

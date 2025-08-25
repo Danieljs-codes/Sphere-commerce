@@ -1,8 +1,9 @@
 import { OverviewMetrics } from "@components/admin/overview-metrics";
 import { SalesMetrics } from "@components/admin/sales-metrics";
+import { OverviewMetricsSkeleton } from "@components/skeletons/overview-metrics";
+import { SalesMetricSkeleton } from "@components/skeletons/sales-metrics";
 import { createFileRoute } from "@tanstack/react-router";
 import { Heading } from "@ui/heading";
-import { Loader } from "@ui/loader";
 import { Suspense } from "react";
 import z from "zod/v4";
 import {
@@ -50,17 +51,10 @@ function RouteComponent() {
 				Metrics over the last 30 Days
 			</Heading>
 			<div className="flex flex-col gap-4">
-				<Suspense
-					fallback={
-						// TODO: Implement the proper fallback
-						<div className="flex justify-center">
-							<Loader intent="primary" />
-						</div>
-					}
-				>
+				<Suspense fallback={<OverviewMetricsSkeleton />}>
 					<OverviewMetrics />
 				</Suspense>
-				<Suspense>
+				<Suspense fallback={<SalesMetricSkeleton />}>
 					<SalesMetrics />
 				</Suspense>
 			</div>
