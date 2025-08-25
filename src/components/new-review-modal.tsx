@@ -171,12 +171,14 @@ export const NewReviewModal = () => {
 							<Controller
 								control={control}
 								name="review"
-								render={({ field }) => (
+								render={({ field, fieldState }) => (
 									<Textarea
 										placeholder="Write your review here..."
 										className="min-h-20"
 										label="Review"
 										{...field}
+										isInvalid={fieldState.invalid}
+										errorMessage={fieldState.error?.message}
 									/>
 								)}
 							/>

@@ -263,9 +263,27 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 				<NavbarTrigger />
 				<NavbarSpacer />
 				<SearchCommandMenu />
-				<Button intent="plain" size="sq-sm" isCircle aria-label="Your Bag">
+				<Link
+					to="/cart"
+					className={buttonStyles({
+						isCircle: true,
+						intent: "plain",
+						size: "sq-sm",
+						className: cn(
+							pathname === "/cart" &&
+								"[--btn-icon:var(--btn-fg)] [--btn-bg:var(--btn-overlay)]",
+							"relative",
+						),
+					})}
+					aria-label="Your Bag"
+				>
+					{cart.length > 0 && (
+						<span className="absolute text-white bg-primary text-[10px] rounded-full size-4 -right-1 -top-1.5 flex items-center justify-center">
+							{cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)}
+						</span>
+					)}
 					<IconShoppingBag />
-				</Button>
+				</Link>
 				<ThemeToggle />
 				<NavbarSeparator className="mr-2.5" />
 				{user ? (
