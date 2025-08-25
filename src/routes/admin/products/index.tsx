@@ -66,6 +66,7 @@ export const Route = createFileRoute("/admin/products/")({
 function RouteComponent() {
 	const queryClient = useQueryClient();
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+	const navigate = Route.useNavigate();
 	const search = Route.useSearch();
 	const { data } = useSuspenseQueryDeferred(getProductStatsQueryOptions());
 	const { data: productsData } = useSuspenseQueryDeferred(
@@ -229,12 +230,6 @@ function RouteComponent() {
 													className: "min-w-45",
 												}}
 											>
-												{/* <Menu.Item onAction={() => setSelectedProduct(item)}>
-                          <IconEdit />
-                          <Menu.Label>Edit Product</Menu.Label>
-                        </Menu.Item>
-                        <Menu.Separator /> */}
-
 												{item.status === "archived" && (
 													<Menu.Item
 														isDisabled={isRestoring}
@@ -277,7 +272,14 @@ function RouteComponent() {
 							<Button
 								size="sm"
 								intent="secondary"
-								onPress={() => {}}
+								onPress={() => {
+									navigate({
+										search: (old) => ({
+											...old,
+											page: Math.max(1, search.page - 1),
+										}),
+									});
+								}}
 								isDisabled={search.page <= 1}
 							>
 								<IconChevronLeft />
@@ -286,7 +288,14 @@ function RouteComponent() {
 							<Button
 								size="sm"
 								intent="secondary"
-								onPress={() => {}}
+								onPress={() => {
+									navigate({
+										search: (old) => ({
+											...old,
+											page: search.page + 1,
+										}),
+									});
+								}}
 								isDisabled={!productsData.hasNextPage}
 							>
 								Next
