@@ -91,7 +91,9 @@ async function processImages(files: File[]) {
 			}
 
 			// Convert to WebP while preserving alpha
-			const outputBuffer = await transformer.webp({ quality: 80 }).toBuffer();
+			const outputBuffer = await transformer
+				.webp({ quality: metadata.width > 1200 ? 80 : 100 })
+				.toBuffer();
 
 			// Generate small version for blurhash (32x32)
 			const { data: raw, info } = await sharp(inputBuffer)
@@ -168,12 +170,6 @@ export const $createProduct = createServerFn({
 			blurhash: blurhashes[index],
 		}));
 
-		// Generate slug (simple example, you may want to use a slugify library)
-		const slug = parsed.name
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/(^-|-$)+/g, "");
-
 		// Insert into database
 		await db.insert(product).values({
 			name: parsed.name,
@@ -206,7 +202,7 @@ export const $archiveProduct = createServerFn({
 			productId: z.string().min(1),
 		}),
 	)
-	.handler(async ({ data, context }) => {
+	.handler(async ({ data }) => {
 		const { productId } = data;
 
 		// Archive the product
@@ -230,7 +226,7 @@ export const $restoreProduct = createServerFn({
 			productId: z.string().min(1),
 		}),
 	)
-	.handler(async ({ data, context }) => {
+	.handler(async ({ data }) => {
 		const { productId } = data;
 
 		// Archive the product
