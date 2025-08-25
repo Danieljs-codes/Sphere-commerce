@@ -229,7 +229,7 @@ function RouteComponent() {
 								dangerouslySetInnerHTML={{ __html: product.description }}
 							/>
 						</div>
-						<div className="mt-6 mb-2 grid grid-cols-2 gap-2">
+						<div className="mt-6 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
 							<Button
 								size="lg"
 								onPress={handleAddToCart}
@@ -257,7 +257,7 @@ function RouteComponent() {
 					</div>
 				</div>
 				{/*Reviews*/}
-				<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
+				<div className="mx-auto max-w-2xl py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8 lg:px-8 lg:py-32">
 					<div className="lg:col-span-4">
 						<h2 className="font-semibold text-2xl tracking-tight">
 							Customer Reviews
