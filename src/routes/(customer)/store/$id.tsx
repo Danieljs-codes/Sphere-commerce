@@ -1,5 +1,6 @@
 import { MetricCard } from "@components/admin/metric-card";
 import { NewReviewModal } from "@components/new-review-modal";
+import ProgressiveImage from "@components/progressive-image";
 import { StarRating } from "@components/star-rating";
 import {
 	IconAddToCartFill,
@@ -24,7 +25,6 @@ import { ProgressBar } from "@ui/progress-bar";
 import { format } from "date-fns";
 import Autoplay from "embla-carousel-autoplay";
 import { useEffect, useRef, useState } from "react";
-import { Blurhash } from "react-blurhash";
 import { toast } from "sonner";
 import z from "zod/v4";
 import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
@@ -179,29 +179,12 @@ function RouteComponent() {
 										key={image.url}
 									>
 										<AspectRatio ratio={1}>
-											{/* make a relative container so we can overlay the Blurhash */}
 											<div className="relative size-full">
-												{!loadedImages[image.url] && image.blurhash && (
-													<div className="absolute inset-0">
-														<Blurhash
-															hash={image.blurhash}
-															width="100%"
-															height="100%"
-															style={{ display: "block" }}
-															className="md:rounded-lg lg:rounded-2xl"
-														/>
-													</div>
-												)}
-												<img
+												<ProgressiveImage
 													src={image.url}
+													blurhash={image.blurhash}
 													alt={product.name}
-													className={`size-full rounded-md object-cover object-center md:rounded-lg lg:rounded-2xl transition-opacity duration-300 ${
-														loadedImages[image.url]
-															? "opacity-100"
-															: "opacity-0"
-													}`}
-													onLoad={() => handleImageLoad(image.url)}
-													onError={() => handleImageError(image.url)}
+													className="size-full"
 												/>
 											</div>
 										</AspectRatio>
