@@ -195,7 +195,7 @@ function RouteComponent() {
 												<img
 													src={image.url}
 													alt={product.name}
-													className={`size-full rounded-none object-cover object-center md:rounded-lg lg:rounded-2xl transition-opacity duration-300 ${
+													className={`size-full rounded-md object-cover object-center md:rounded-lg lg:rounded-2xl transition-opacity duration-300 ${
 														loadedImages[image.url]
 															? "opacity-100"
 															: "opacity-0"
