@@ -123,7 +123,6 @@ function RouteComponent() {
 								console.log(isValid, form.getValues());
 
 								if (!isValid) {
-									/* toast + return */
 									return;
 								}
 

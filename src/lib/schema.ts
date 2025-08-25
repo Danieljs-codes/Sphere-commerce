@@ -110,7 +110,7 @@ export const productFormBackendSchema = z.object({
 	price: z
 		.string()
 		.transform((val) => Number(val))
-		.refine((val) => !isNaN(val) && val >= 100, {
+		.refine((val) => !Number.isNaN(val) && val >= 100, {
 			message: "Price must be at least ₦100",
 		}),
 	description: z
@@ -128,7 +128,7 @@ export const productFormBackendSchema = z.object({
 			return [];
 		}
 	}),
-	images: z.any().array().nonempty("At least one image is required"), // Accept files from FormData
+	images: z.array(z.file()),
 	stockCount: z
 		.string()
 		.transform((val) => Number(val))

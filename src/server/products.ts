@@ -5,7 +5,6 @@ import { product } from "@server/db/schema";
 import { utapi } from "@server/uploadthing";
 import { createServerFn } from "@tanstack/react-start";
 import { encode } from "blurhash";
-import { File } from "buffer";
 import { and, eq, sql } from "drizzle-orm";
 import sharp from "sharp";
 import z from "zod/v4";
@@ -72,6 +71,61 @@ export const $getProductPage = createServerFn()
 		};
 	});
 
+// Helper function to process images
+async function processImages(files: File[]) {
+	const processedImages: File[] = [];
+	const blurhashes: string[] = [];
+
+	await Promise.all(
+		files.map(async (file) => {
+			const inputBuffer = Buffer.from(await file.arrayBuffer());
+			if (!inputBuffer) return;
+
+			const metadata = await sharp(inputBuffer).metadata();
+
+			let transformer = sharp(inputBuffer);
+
+			// Resize only if width > 1200
+			if (metadata.width && metadata.width > 1200) {
+				transformer = transformer.resize({ width: 1200 });
+			}
+
+			// Convert to WebP while preserving alpha
+			const outputBuffer = await transformer.webp({ quality: 80 }).toBuffer();
+
+			// Generate small version for blurhash (32x32)
+			const { data: raw, info } = await sharp(inputBuffer)
+				.resize(32, 32, { fit: "inside" })
+				.raw()
+				.ensureAlpha()
+				.toBuffer({ resolveWithObject: true });
+
+			const hash = encode(
+				new Uint8ClampedArray(raw),
+				info.width,
+				info.height,
+				4,
+				4,
+			);
+
+			blurhashes.push(hash);
+
+			// Convert to File for UploadThing
+			const processedFile = new File(
+				[new Uint8Array(outputBuffer)],
+				file.name,
+				{
+					type: "image/webp",
+				},
+			);
+
+			processedImages.push(processedFile);
+		}),
+	);
+
+	return { processedImages, blurhashes };
+}
+
 export const $createProduct = createServerFn({
 	method: "POST",
 })
@@ -104,59 +158,7 @@ export const $createProduct = createServerFn({
 		const parsed = result.data;
 
 		// Process images with sharp & generate blurhash
-		const processedImages: File[] = [];
-		const blurhashes: string[] = [];
-		let imageIndex = 0;
-
-		for (const file of parsed.images as any[]) {
-			let inputBuffer: Buffer | undefined;
-			const originalName =
-				file?.originalname || file?.name || `image_${imageIndex}.jpg`;
-
-			if (file instanceof Buffer) {
-				inputBuffer = file;
-			} else if (file?.buffer instanceof Buffer) {
-				inputBuffer = file.buffer;
-			} else if (typeof file.arrayBuffer === "function") {
-				inputBuffer = Buffer.from(await file.arrayBuffer());
-			}
-
-			if (!inputBuffer) continue;
-
-			// Resize main image
-			const outputBuffer = await sharp(inputBuffer)
-				.resize({ width: 1200 })
-				.webp({ quality: 80 })
-				.toBuffer();
-
-			// Generate small version for blurhash (e.g., 32x32)
-			const smallBuffer = await sharp(inputBuffer)
-				.resize(32, 32, { fit: "inside" })
-				.raw()
-				.ensureAlpha()
-				.toBuffer({ resolveWithObject: true });
-
-			const { data: raw, info } = smallBuffer;
-
-			// Encode Blurhash
-			const hash = encode(
-				new Uint8ClampedArray(raw),
-				info.width,
-				info.height,
-				4,
-				4,
-			);
-
-			blurhashes.push(hash);
-
-			// Convert Buffer back to File for UploadThing
-			const processedFile = new File([outputBuffer], originalName, {
-				type: "image/webp",
-			});
-
-			processedImages.push(processedFile);
-			imageIndex++;
-		}
+		const { processedImages, blurhashes } = await processImages(parsed.images);
 
 		// Upload processed files to UploadThing
 		const uploadedFiles = await utapi.uploadFiles(processedImages);
@@ -173,7 +175,6 @@ export const $createProduct = createServerFn({
 			.replace(/(^-|-$)+/g, "");
 
 		// Insert into database
-		// TODO: Handle scheduled products
 		await db.insert(product).values({
 			name: parsed.name,
 			slug: createId(),
@@ -183,7 +184,7 @@ export const $createProduct = createServerFn({
 			stock: parsed.stockCount,
 			sellerId: context.session.user.id,
 			images: imagesWithHash,
-			tags: parsed.tags,
+			tags: parsed.tags as string[],
 			metaTitle: parsed.metaTitle,
 			metaDescription: parsed.metaDescription,
 			status: parsed.status,
