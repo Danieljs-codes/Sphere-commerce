@@ -117,7 +117,7 @@ function RouteComponent() {
 			<h1 className="sr-only">Checkout</h1>
 			<form
 				onSubmit={handleSubmit(onSubmit)}
-				className="lg:gap-16 grid lg:grid-cols-2 grid-cols-1 max-w-5xl mx-auto"
+				className="lg:gap-16 grid lg:grid-cols-2 grid-cols-1 max-w-5xl mx-auto gap-8"
 			>
 				<div className="flex flex-col">
 					<div className="pb-8 mb-8 border-b">
@@ -284,10 +284,8 @@ function RouteComponent() {
 										alt={product.product.name}
 										isSquare
 									/>
-									<div className="flex-1">
-										<h4 className="font-medium truncate">
-											{product.product.name}
-										</h4>
+									<div className="flex-1 w-fit">
+										<h4 className="font-medium">{product.product.name}</h4>
 										<p className="mt-1">
 											Quantity: {product.quantity} x ₦
 											{formatNairaShort(product.product.price)}

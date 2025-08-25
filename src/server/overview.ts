@@ -140,7 +140,7 @@ export const $getRecentSalesData = createServerFn()
 				)
 				.groupBy(product.id, product.name)
 				.orderBy(sql`sum(${orderItem.quantity}) desc`)
-				.limit(5),
+				.limit(8),
 		]);
 
 		const dailyEarningsMap = new Map(

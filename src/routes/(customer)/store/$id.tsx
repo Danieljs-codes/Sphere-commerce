@@ -159,9 +159,9 @@ function RouteComponent() {
 
 	return (
 		<div>
-			<div className="max-w-screen-xl mx-auto px-4">
+			<div className="max-w-screen-xl mx-auto">
 				<div className="grid gap-y-2 py-0 lg:grid-cols-2 lg:gap-16 lg:py-10">
-					<div className="-mx-4 -mb-6 -mt-4 sm:mb-0 md:mx-0 lg:mt-0">
+					<div className="-mb-6 -mt-4 sm:mb-0 md:mx-0 lg:mt-0">
 						<Carousel
 							className="relative"
 							onMouseEnter={plugin.current.stop}
