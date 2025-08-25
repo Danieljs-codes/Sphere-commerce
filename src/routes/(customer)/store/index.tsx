@@ -194,7 +194,7 @@ function RouteComponent() {
 				<div className="col-span-3">
 					<div className="py-6">
 						<h2 className="sr-only">Products</h2>
-						<div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 							{productsPage.items.map((product) => (
 								<div key={product.id} className="group relative">
 									<div className="group-hover:-translate-x-0 absolute top-2 right-2 z-10 flex translate-x-2 flex-col gap-y-1 opacity-0 transition ease-linear group-hover:opacity-100">

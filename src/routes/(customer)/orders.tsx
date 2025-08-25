@@ -89,7 +89,7 @@ function RouteComponent() {
 										header: "p-2 block flex items-center justify-between",
 										title:
 											"pl-0 font-mono font-normal! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
-										action: "w-fit",
+										action: "w-fit block",
 										content: "mt-0 h-full",
 									}}
 									action={
@@ -127,6 +127,9 @@ function RouteComponent() {
 										<SummaryItem
 											label="Shipping Address"
 											value={`${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zip}, ${order.shippingAddress.country}`}
+											classNames={{
+												value: "truncate",
+											}}
 										/>
 										<SummaryItem
 											label="Shipped at"
