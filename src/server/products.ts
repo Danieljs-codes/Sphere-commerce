@@ -5,7 +5,7 @@ import { product } from "@server/db/schema";
 import { utapi } from "@server/uploadthing";
 import { createServerFn } from "@tanstack/react-start";
 import { encode } from "blurhash";
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import sharp from "sharp";
 import z from "zod/v4";
 import { productFormBackendSchema } from "@/lib/schema";
@@ -58,7 +58,7 @@ export const $getProductPage = createServerFn()
 			.select()
 			.from(product)
 			.where(filter ? and(whereClause, eq(product.status, filter)) : undefined)
-			.orderBy(product.createdAt)
+			.orderBy(desc(product.createdAt))
 			.limit(numItems + 1)
 			.offset(offset);
 

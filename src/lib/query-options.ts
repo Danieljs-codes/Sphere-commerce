@@ -181,8 +181,8 @@ export const getProductsQueryOptions = ({
 	maxPrice,
 	category = [],
 	sort = "high-to-low",
-	page = 1,
-	limit = 12,
+	page,
+	limit,
 }: {
 	minPrice?: number;
 	maxPrice?: number;

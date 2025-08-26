@@ -65,25 +65,33 @@ export const Route = createFileRoute("/(customer)/store/")({
 	component: RouteComponent,
 });
 
-function Filter({
-	categories,
-	prices,
-	selectedCategories,
-	setSelectedCategories,
-	priceRange,
-	setPriceRange,
-	sort,
-	setSort,
-}: {
-	categories: { id: string; name: string }[];
-	prices: { lowestPrice: number; highestPrice: number };
+type FilterState = {
 	selectedCategories: string[];
 	setSelectedCategories: (categories: string[]) => void;
 	priceRange: [number, number];
 	setPriceRange: (range: [number, number]) => void;
 	sort: "high-to-low" | "low-to-high";
 	setSort: (sort: "high-to-low" | "low-to-high") => void;
+};
+
+function Filter({
+	categories,
+	prices,
+	state,
+}: {
+	categories: { id: string; name: string }[];
+	prices: { lowestPrice: number; highestPrice: number };
+	state: FilterState;
 }) {
+	const {
+		selectedCategories,
+		setSelectedCategories,
+		priceRange,
+		setPriceRange,
+		sort,
+		setSort,
+	} = state;
+
 	return (
 		<div className="flex flex-col gap-6">
 			<DisclosureGroup defaultExpandedKeys={[1]}>
@@ -205,6 +213,15 @@ function RouteComponent() {
 		});
 	}, [debouncedSort, navigate]);
 
+	const filterState = {
+		selectedCategories,
+		setSelectedCategories,
+		priceRange,
+		setPriceRange,
+		sort,
+		setSort,
+	} satisfies FilterState;
+
 	return (
 		<div className="mx-auto w-full max-w-(--breakpoint-xl)">
 			<div>
@@ -236,16 +253,7 @@ function RouteComponent() {
 			)}
 			<div className="grid-cols-1 lg:grid-cols-4 gap-16 lg:grid">
 				<div className="hidden lg:block">
-					<Filter
-						categories={categories}
-						prices={prices}
-						selectedCategories={selectedCategories}
-						setSelectedCategories={setSelectedCategories}
-						priceRange={priceRange}
-						setPriceRange={setPriceRange}
-						sort={sort}
-						setSort={setSort}
-					/>
+					<Filter categories={categories} prices={prices} state={filterState} />
 				</div>
 				<div className="lg:col-span-3">
 					<div className="py-6">
@@ -307,6 +315,45 @@ function RouteComponent() {
 							))}
 						</div>
 					</div>
+					<div className="flex items-center gap-2 justify-end">
+						<p className="text-sm text-muted-fg">
+							Page {productsPage.page} of {productsPage.pages} ·{" "}
+							{productsPage.total} products
+						</p>
+						<Separator orientation="vertical" className="h-4" />
+						<div className="flex items-center gap-2">
+							<Button
+								size="sm"
+								intent="secondary"
+								isDisabled={productsPage.page === 1}
+								onPress={() => {
+									navigate({
+										search: (prev) => ({
+											...prev,
+											page: (prev.page ?? 1) - 1,
+										}),
+									});
+								}}
+							>
+								Previous
+							</Button>
+							<Button
+								size="sm"
+								intent="secondary"
+								isDisabled={productsPage.page === productsPage.pages}
+								onPress={() => {
+									navigate({
+										search: (prev) => ({
+											...prev,
+											page: (prev.page ?? 1) + 1,
+										}),
+									});
+								}}
+							>
+								Next
+							</Button>
+						</div>
+					</div>
 				</div>
 			</div>
 			<PreviewProductModal
@@ -327,12 +374,7 @@ function RouteComponent() {
 						<Filter
 							categories={categories}
 							prices={prices}
-							selectedCategories={selectedCategories}
-							setSelectedCategories={setSelectedCategories}
-							priceRange={priceRange}
-							setPriceRange={setPriceRange}
-							sort={sort}
-							setSort={setSort}
+							state={filterState}
 						/>
 					</Sheet.Body>
 				</Sheet.Content>
