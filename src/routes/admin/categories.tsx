@@ -51,7 +51,7 @@ function RouteComponent() {
 	return (
 		<div>
 			<div className="mb-8 flex items-center justify-between">
-				<Heading className="sm:text-xl mb-6">Categories</Heading>
+				<Heading className="sm:text-xl">Categories</Heading>
 				<Button
 					size="sm"
 					onPress={() =>
@@ -126,7 +126,7 @@ function RouteComponent() {
 					Page {search.page} of {data.pageCount} ·{" "}
 					<span className="text-fg font-medium">{data.total} Categories</span>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="hidden md:flex items-center gap-2">
 					<Label className="text-sm">Rows per page</Label>
 					<Select
 						className="w-fit"

@@ -8,6 +8,7 @@ import { Button } from "@ui/button";
 import { Label } from "@ui/field";
 import { Heading } from "@ui/heading";
 import { Link } from "@ui/link";
+import { Loader } from "@ui/loader";
 import { Select } from "@ui/select";
 import { Table } from "@ui/table";
 import { format } from "date-fns";
@@ -49,7 +50,9 @@ export const Route = createFileRoute("/admin/orders/")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const search = Route.useSearch();
-	const { data } = useSuspenseQueryDeferred(getOrdersQueryOptions(search));
+	const { data, isSuspending } = useSuspenseQueryDeferred(
+		getOrdersQueryOptions(search),
+	);
 
 	return (
 		<div>
@@ -59,13 +62,25 @@ function RouteComponent() {
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 				<MetricCard
 					title="Total Orders"
-					description="Total number of orders placed"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.counts.totalOrders}</p>
 				</MetricCard>
 				<MetricCard
 					title="Processing Orders"
-					description="Orders currently being processed"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">
 						{data.counts.processingOrders}
@@ -73,13 +88,25 @@ function RouteComponent() {
 				</MetricCard>
 				<MetricCard
 					title="Shipped Orders"
-					description="Orders that have been shipped"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.counts.shippedOrders}</p>
 				</MetricCard>
 				<MetricCard
 					title="Delivered Orders"
-					description="Orders that have been delivered"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">
 						{data.counts.deliveredOrders}
@@ -96,36 +123,45 @@ function RouteComponent() {
 						action: "block",
 					}}
 					action={
-						<Select
-							placeholder="Select Filter"
-							selectedKey={search.status}
-							onSelectionChange={(key) => {
-								navigate({
-									search: (prev) => ({
-										...prev,
-										status: key as "processing" | "shipped" | "delivered",
-									}),
-								});
-							}}
-						>
-							<Select.Trigger />
-							<Select.List
-								popover={{ placement: "bottom right", className: "min-w-40" }}
+						<div className="flex items-center gap-2">
+							{isSuspending && <Loader />}
+							<Select
+								placeholder="Select Filter"
+								selectedKey={
+									search.status === undefined ? "all" : search.status
+								}
+								className="w-fit"
+								onSelectionChange={(key) => {
+									navigate({
+										search: (prev) => ({
+											...prev,
+											status: key as "processing" | "shipped" | "delivered",
+										}),
+									});
+								}}
 							>
-								<Select.Option id={"processing"}>
-									<IconPackageProcess />
-									<Select.Label>Processing</Select.Label>
-								</Select.Option>
-								<Select.Option id={"shipped"}>
-									<IconPackageMoving />
-									<Select.Label>Shipped</Select.Label>
-								</Select.Option>
-								<Select.Option id={"delivered"}>
-									<IconPackageDelivered />
-									<Select.Label>Delivered</Select.Label>
-								</Select.Option>
-							</Select.List>
-						</Select>
+								<Select.Trigger />
+								<Select.List
+									popover={{ placement: "bottom right", className: "min-w-40" }}
+								>
+									<Select.Option id={"all"}>
+										<Select.Label>All Orders</Select.Label>
+									</Select.Option>
+									<Select.Option id={"processing"}>
+										<IconPackageProcess />
+										<Select.Label>Processing</Select.Label>
+									</Select.Option>
+									<Select.Option id={"shipped"}>
+										<IconPackageMoving />
+										<Select.Label>Shipped</Select.Label>
+									</Select.Option>
+									<Select.Option id={"delivered"}>
+										<IconPackageDelivered />
+										<Select.Label>Delivered</Select.Label>
+									</Select.Option>
+								</Select.List>
+							</Select>
+						</div>
 					}
 				>
 					<Table>
@@ -203,7 +239,7 @@ function RouteComponent() {
 							{data.pagination.totalItems} orders
 						</span>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className="md:flex items-center gap-2 hidden">
 						<Label className="text-sm">Rows per page</Label>
 						<Select
 							className="w-fit"

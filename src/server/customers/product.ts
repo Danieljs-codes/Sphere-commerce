@@ -42,7 +42,7 @@ export const $getProducts = createServerFn()
 				.optional()
 				.default("high-to-low"),
 			page: z.number().int().positive().optional().default(1),
-			limit: z.number().int().positive().max(100).optional().default(24),
+			limit: z.number().int().positive().max(100).optional().default(12),
 		}),
 	)
 	.handler(async ({ data }) => {

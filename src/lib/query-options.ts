@@ -107,7 +107,7 @@ export const getOrdersQueryOptions = ({
 	status?: "processing" | "shipped" | "delivered";
 }) =>
 	queryOptions({
-		queryKey: ["dashboard", "orders"],
+		queryKey: ["dashboard", "orders", page, limit, status],
 		queryFn: async () => {
 			const data = await $getOrders({
 				data: {
@@ -182,7 +182,7 @@ export const getProductsQueryOptions = ({
 	category = [],
 	sort = "high-to-low",
 	page = 1,
-	limit = 24,
+	limit = 12,
 }: {
 	minPrice?: number;
 	maxPrice?: number;

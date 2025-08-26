@@ -1,4 +1,5 @@
 import { PreviewProductModal } from "@components/preview-product-modal";
+import { IconFilterFill } from "@intentui/icons";
 import type { Product } from "@server/db/schema";
 import { IconEyeFilled, IconHeartFilled } from "@tabler/icons-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
@@ -13,8 +14,10 @@ import {
 } from "@ui/disclosure";
 import { Description, Label } from "@ui/field";
 import { Link } from "@ui/link";
+import { Loader } from "@ui/loader";
 import { Radio, RadioGroup } from "@ui/radio";
 import { Separator } from "@ui/separator";
+import { Sheet } from "@ui/sheet";
 import { Slider } from "@ui/slider";
 import { useEffect, useState } from "react";
 import { z } from "zod/v4";
@@ -36,6 +39,12 @@ const searchParamSchema = z.object({
 		.optional()
 		.default("high-to-low")
 		.catch("high-to-low"),
+	page: z.number().int().positive().default(1).catch(1),
+	limit: z
+		.union([z.literal(12), z.literal(24), z.literal(36)])
+		.optional()
+		.default(12)
+		.catch(12),
 });
 
 export const Route = createFileRoute("/(customer)/store/")({
@@ -56,9 +65,91 @@ export const Route = createFileRoute("/(customer)/store/")({
 	component: RouteComponent,
 });
 
+function Filter({
+	categories,
+	prices,
+	selectedCategories,
+	setSelectedCategories,
+	priceRange,
+	setPriceRange,
+	sort,
+	setSort,
+}: {
+	categories: { id: string; name: string }[];
+	prices: { lowestPrice: number; highestPrice: number };
+	selectedCategories: string[];
+	setSelectedCategories: (categories: string[]) => void;
+	priceRange: [number, number];
+	setPriceRange: (range: [number, number]) => void;
+	sort: "high-to-low" | "low-to-high";
+	setSort: (sort: "high-to-low" | "low-to-high") => void;
+}) {
+	return (
+		<div className="flex flex-col gap-6">
+			<DisclosureGroup defaultExpandedKeys={[1]}>
+				<Disclosure id={1} className="border-0">
+					<DisclosureTrigger>Categories</DisclosureTrigger>
+					<DisclosurePanel>
+						<CheckboxGroup
+							className="space-y-3 px-1"
+							value={selectedCategories}
+							onChange={setSelectedCategories}
+						>
+							{categories.map((category) => (
+								<Checkbox
+									labelClassName="text-muted-fg"
+									key={category.id}
+									value={category.name.toLowerCase()}
+								>
+									{category.name}
+								</Checkbox>
+							))}
+						</CheckboxGroup>
+					</DisclosurePanel>
+				</Disclosure>
+			</DisclosureGroup>
+			<Slider
+				minValue={prices.lowestPrice / 100}
+				maxValue={prices.highestPrice / 100 + 1000}
+				defaultValue={priceRange}
+				onChange={(val) => {
+					setPriceRange(val as [number, number]);
+				}}
+				valueFormatter={(value) => {
+					if (value >= 1000000) {
+						return `${(value / 1000000).toFixed(1)}M`;
+					}
+					if (value >= 1000) {
+						return `${(value / 1000).toFixed(1)}K`;
+					}
+					return `₦${value.toLocaleString()}`;
+				}}
+				label="Price Range"
+			/>
+			<RadioGroup
+				name="sort"
+				value={sort}
+				onChange={(val) => setSort(val as "high-to-low" | "low-to-high")}
+			>
+				<Label>Sort Prices</Label>
+				<Description>Sort the products by price</Description>
+				<Radio value="high-to-low">
+					<Label>High to Low</Label>
+					<Description>Sort the products by price from high to low</Description>
+				</Radio>
+				<Radio value="low-to-high">
+					<Label>Low to High</Label>
+					<Description>Sort the products by price from low to high</Description>
+				</Radio>
+			</RadioGroup>
+		</div>
+	);
+}
+
 function RouteComponent() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+	const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
 	const [{ data: categories }, { data: prices }] = useSuspenseQueries({
 		queries: [
@@ -126,72 +217,37 @@ function RouteComponent() {
 				</p>
 			</div>
 			<Separator className="-mx-[calc(50dvw_-_49.5%)] w-dvw my-6 sm:my-12" />
-			<div className="grid-cols-4 gap-16 lg:grid">
-				<div>
-					<div className="flex flex-col gap-6">
-						<DisclosureGroup defaultExpandedKeys={[1]}>
-							<Disclosure id={1} className="border-0">
-								<DisclosureTrigger>Categories</DisclosureTrigger>
-								<DisclosurePanel>
-									<CheckboxGroup
-										className="space-y-3 px-1"
-										value={selectedCategories}
-										onChange={setSelectedCategories}
-									>
-										{categories.map((category) => (
-											<Checkbox
-												labelClassName="text-muted-fg"
-												key={category.id}
-												value={category.name.toLowerCase()}
-											>
-												{category.name}
-											</Checkbox>
-										))}
-									</CheckboxGroup>
-								</DisclosurePanel>
-							</Disclosure>
-						</DisclosureGroup>
-						<Slider
-							minValue={prices.lowestPrice / 100}
-							maxValue={prices.highestPrice / 100 + 1000}
-							defaultValue={priceRange}
-							onChange={(val) => {
-								setPriceRange(val as [number, number]);
-							}}
-							valueFormatter={(value) => {
-								if (value >= 1000000) {
-									return `${(value / 1000000).toFixed(1)}M`;
-								}
-								if (value >= 1000) {
-									return `${(value / 1000).toFixed(1)}K`;
-								}
-								return `₦${value.toLocaleString()}`;
-							}}
-							label="Price Range"
-						/>
-						<RadioGroup
-							name="sort"
-							value={sort}
-							onChange={(val) => setSort(val as "high-to-low" | "low-to-high")}
-						>
-							<Label>Sort Prices</Label>
-							<Description>Sort the products by price</Description>
-							<Radio value="high-to-low">
-								<Label>High to Low</Label>
-								<Description>
-									Sort the products by price from high to low
-								</Description>
-							</Radio>
-							<Radio value="low-to-high">
-								<Label>Low to High</Label>
-								<Description>
-									Sort the products by price from low to high
-								</Description>
-							</Radio>
-						</RadioGroup>
-					</div>
+			<div className="flex justify-end">
+				<Button
+					size="sm"
+					className="mb-4 lg:hidden"
+					onPress={() => setIsFilterSheetOpen(true)}
+					intent="outline"
+				>
+					Filters
+					<IconFilterFill />
+				</Button>
+			</div>
+			{isSuspending && (
+				<div className="mb-4 flex items-center justify-center gap-2 animate-pulse rounded-md bg-muted-fg/10 p-4 text-center text-sm text-muted-fg">
+					<Loader />
+					Applying filters...
 				</div>
-				<div className="col-span-3">
+			)}
+			<div className="grid-cols-1 lg:grid-cols-4 gap-16 lg:grid">
+				<div className="hidden lg:block">
+					<Filter
+						categories={categories}
+						prices={prices}
+						selectedCategories={selectedCategories}
+						setSelectedCategories={setSelectedCategories}
+						priceRange={priceRange}
+						setPriceRange={setPriceRange}
+						sort={sort}
+						setSort={setSort}
+					/>
+				</div>
+				<div className="lg:col-span-3">
 					<div className="py-6">
 						<h2 className="sr-only">Products</h2>
 						<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -259,6 +315,28 @@ function RouteComponent() {
 					if (!isOpen) setProduct(null);
 				}}
 			/>
+			<Sheet>
+				<Sheet.Content
+					isOpen={isFilterSheetOpen}
+					onOpenChange={setIsFilterSheetOpen}
+				>
+					<Sheet.Header>
+						<Sheet.Title>Filters</Sheet.Title>
+					</Sheet.Header>
+					<Sheet.Body>
+						<Filter
+							categories={categories}
+							prices={prices}
+							selectedCategories={selectedCategories}
+							setSelectedCategories={setSelectedCategories}
+							priceRange={priceRange}
+							setPriceRange={setPriceRange}
+							sort={sort}
+							setSort={setSort}
+						/>
+					</Sheet.Body>
+				</Sheet.Content>
+			</Sheet>
 		</div>
 	);
 }

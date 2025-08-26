@@ -107,16 +107,6 @@ function RouteComponent() {
 					<div className="flex items-center justify-end pt-6 border-t gap-2">
 						<Button
 							type="button"
-							intent="secondary"
-							onPress={() => {
-								const formData = form.getValues();
-								console.log("Saving draft:", formData);
-							}}
-						>
-							Save Draft
-						</Button>
-						<Button
-							type="button"
 							isPending={isPending}
 							onPress={async () => {
 								const isValid = await form.trigger();

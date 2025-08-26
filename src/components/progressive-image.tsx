@@ -95,7 +95,7 @@ export default function ProgressiveImage({
 						width="100%"
 						height="100%"
 						style={{ display: "block", borderRadius: "var(--border-radius)" }}
-						className="md:rounded-lg lg:rounded-2xl"
+						className="rounded-lg lg:rounded-2xl"
 					/>
 				</div>
 			)}
@@ -115,7 +115,7 @@ export default function ProgressiveImage({
 					setLoaded(true);
 				}}
 				className={cn(
-					"block w-full h-full object-cover object-center transition-opacity duration-300 md:rounded-lg lg:rounded-2xl",
+					"block w-full h-full object-cover object-center transition-opacity duration-300 rounded-lg lg:rounded-2xl",
 					loaded ? "opacity-100" : "opacity-0",
 				)}
 				{...props}
