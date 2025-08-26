@@ -175,7 +175,7 @@ function RouteComponent() {
 					</Badge>
 				)}
 			</div>
-			<div className="grid grid-cols-3 gap-4 mb-6">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 				<MetricCard
 					title={`Order #${data.orderNumber}`}
 					action={
