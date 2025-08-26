@@ -203,14 +203,6 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 						Store
 					</NavbarItem>
 
-					{/* Helpful top-level pages */}
-					<NavbarItem
-						to="/about"
-						isCurrent={pathname.toLowerCase() === "/about"}
-					>
-						About
-					</NavbarItem>
-
 					<NavbarItem to="/orders" isCurrent={pathname === "/orders"}>
 						Orders
 					</NavbarItem>
