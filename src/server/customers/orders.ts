@@ -37,7 +37,6 @@ export const $getUserOrderHistory = createServerFn()
 			.where(
 				decodedCursor
 					? and(
-							// ensure we only fetch orders for the signed in user
 							eq(order.userId, context.session.user.id),
 							or(
 								lt(order.createdAt, new Date(decodedCursor.createdAt)),
@@ -47,13 +46,10 @@ export const $getUserOrderHistory = createServerFn()
 								),
 							),
 						)
-					: // no cursor — still restrict to the signed in user's orders
-						eq(order.userId, context.session.user.id),
+					: eq(order.userId, context.session.user.id),
 			)
 			.orderBy(desc(order.createdAt), desc(order.id))
-			.limit(
-				limit + 1, // Fetch one extra to determine if there's a next page
-			);
+			.limit(limit + 1);
 
 		// Group into orders
 		const grouped = rawOrders.reduce(

@@ -371,7 +371,7 @@ function SearchCommandMenu() {
 									<ProductImage product={product} />
 								</MetricCard>
 								<div className="flex justify-between items-center">
-									<CommandMenu.Label className="text-muted-fg truncate max-w-[20ch] md:max-w-[50ch]">
+									<CommandMenu.Label className="text-muted-fg truncate max-w-[20ch] md:max-w-[40ch]">
 										{product.name}
 									</CommandMenu.Label>
 									<p className="text-sm font-medium tabular-nums">
