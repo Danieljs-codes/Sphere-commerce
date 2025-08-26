@@ -80,7 +80,6 @@ function RouteComponent() {
 		},
 		throwOnError: true,
 		onSuccess: ({ url }) => {
-			alert(url);
 			window.location.href = url;
 		},
 	});

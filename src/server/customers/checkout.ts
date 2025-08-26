@@ -173,7 +173,7 @@ export const $checkout = createServerFn({
 			email: context.session.user.email,
 			amount: total.toString(),
 			currency: "NGN",
-			callback_url: `${env.BETTER_AUTH_URL}/payment-callback`,
+			callback_url: `${env.VITE_APP_URL}/payment-callback`,
 			reference: checkoutReference,
 			metadata: {
 				userId,

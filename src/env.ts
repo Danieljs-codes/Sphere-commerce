@@ -21,6 +21,7 @@ export const env = createEnv({
 	client: {
 		VITE_APP_TITLE: z.string().min(1).optional(),
 		VITE_PAYSTACK_PUBLIC_KEY: z.string().min(1),
+		VITE_APP_URL: z.url().min(1),
 	},
 
 	/**
@@ -36,6 +37,7 @@ export const env = createEnv({
 		PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
 		VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
 		CURSOR_SIGNING_KEY: process.env.CURSOR_SIGNING_KEY,
+		VITE_APP_URL: import.meta.env.VITE_APP_URL,
 	},
 
 	/**
