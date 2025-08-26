@@ -121,25 +121,49 @@ function RouteComponent() {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<MetricCard
 					title="Total Product"
-					description="All products in your store"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.totalProducts}</p>
 				</MetricCard>
 				<MetricCard
-					title="Active Product"
-					description="Products currently available for sale"
+					title="Active Product (Available for Sale)"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.activeProducts}</p>
 				</MetricCard>
 				<MetricCard
-					title="Inactive Product"
-					description="Products not visible to customers"
+					title="Inactive Product (Draft/Archived)"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.inactiveProducts}</p>
 				</MetricCard>
 				<MetricCard
 					title="Scheduled Product"
-					description="Products scheduled to be published"
+					classNames={{
+						header: "p-2 block flex items-center justify-between",
+						title:
+							"pl-0 font-mono font-medium! text-muted-fg text-xs sm:text-xs uppercase font-normal tracking-tight",
+						action: "w-fit",
+						content: "mt-0 h-full",
+					}}
 				>
 					<p className="text-2xl font-semibold">{data.scheduledProducts}</p>
 				</MetricCard>

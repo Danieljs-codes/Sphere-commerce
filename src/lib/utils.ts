@@ -58,7 +58,10 @@ export function willTextWrap(text: string, maxCharsPerLine = 40): boolean {
 	return text.length > maxCharsPerLine;
 }
 
-export function formatNairaShort(amountInKobo: number) {
+export function formatNairaShort(
+	amountInKobo: number,
+	options?: { decimals?: number; padZeros?: boolean },
+): string | null {
 	// Convert to Naira
 	const naira = amountInKobo / 100;
 
@@ -67,11 +70,19 @@ export function formatNairaShort(amountInKobo: number) {
 		return null;
 	}
 
+	const decimals = options?.decimals ?? 2;
+	const padZeros = options?.padZeros ?? false;
+
+	const fmt = (value: number) => {
+		const s = value.toFixed(decimals);
+		return padZeros ? s : s.replace(/\.?0+$/, "");
+	};
+
 	if (naira >= 1_000_000) {
-		return `${(naira / 1_000_000).toFixed(2).replace(/\.?0+$/, "")}M`;
+		return `${fmt(naira / 1_000_000)}M`;
 	}
 
-	return `${(naira / 1_000).toFixed(2).replace(/\.?0+$/, "")}K`;
+	return `${fmt(naira / 1_000)}K`;
 }
 
 export const getBadgeIntentForOrderStatus = (
@@ -85,4 +96,9 @@ export const getBadgeIntentForOrderStatus = (
 		case "delivered":
 			return "success";
 	}
+};
+
+export const isMillions = (amountInKobo: number) => {
+	const naira = amountInKobo / 100;
+	return naira >= 1_000_000;
 };
