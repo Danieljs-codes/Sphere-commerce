@@ -139,7 +139,7 @@ export const getExistingCategoriesWithPaginationQueryOptions = ({
 	limit: 10 | 20 | 30 | 40 | 50;
 }) =>
 	queryOptions({
-		queryKey: ["dashboard", "categories"],
+		queryKey: ["dashboard", "categories", "pagination", page, limit],
 		queryFn: async () => {
 			const data = await $getExistingCategoriesWithPagination({
 				data: { page, limit },

@@ -3,12 +3,12 @@ import { Logo } from "@components/logo";
 import { ProgressiveBlur } from "@components/progressive-blur";
 import { IconBrandX } from "@intentui/icons";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@ui/badge";
 import { buttonStyles } from "@ui/button";
 import { Carousel } from "@ui/carousel";
 import { Link } from "@ui/link";
+import { useSuspenseQueryDeferred } from "@/hooks/use-suspense-query-deferred";
 import { getExistingCategoriesQueryOptions } from "@/lib/query-options";
 
 export const Route = createFileRoute("/(customer)/")({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/(customer)/")({
 });
 
 function App() {
-	const { data: categories } = useSuspenseQuery(
+	const { data: categories } = useSuspenseQueryDeferred(
 		getExistingCategoriesQueryOptions(),
 	);
 
