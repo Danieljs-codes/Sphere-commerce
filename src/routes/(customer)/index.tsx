@@ -65,7 +65,7 @@ function App() {
 							{categories.map((category) => (
 								<Carousel.Item
 									key={category.id}
-									className="basis-1/2 md:basis-1/4 overflow-hidden isolate"
+									className="basis-full md:basis-1/4 overflow-hidden isolate"
 								>
 									<AspectRatio ratio={1 / 1} className="relative">
 										<img
@@ -76,7 +76,7 @@ function App() {
 
 										{/* Noise overlay */}
 										<div
-											className="absolute inset-0 z-10 rounded-xl pointer-events-none"
+											className="hidden md:block absolute inset-0 z-10 rounded-xl pointer-events-none"
 											style={{
 												backgroundImage:
 													"url('https://grainy-gradients.vercel.app/noise.svg')",
@@ -85,10 +85,19 @@ function App() {
 												mixBlendMode: "multiply",
 											}}
 										/>
-										<ProgressiveBlur
-											className="pointer-events-none absolute bottom-0 left-0 z-20 h-[50%] w-full rounded-xl"
-											blurIntensity={6}
+										<div
+											className="md:hidden pointer-events-none absolute bottom-0 left-0 z-20 h-[50%] w-full rounded-xl"
+											style={{
+												background:
+													"linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)",
+											}}
 										/>
+										<div className="hidden md:block">
+											<ProgressiveBlur
+												className="pointer-events-none absolute bottom-0 left-0 z-20 h-[50%] w-full rounded-xl"
+												blurIntensity={6}
+											/>
+										</div>
 
 										<div className="absolute bottom-0 left-0 z-30">
 											<div className="flex flex-col items-start gap-0 px-5 py-4">

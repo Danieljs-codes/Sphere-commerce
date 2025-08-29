@@ -7,15 +7,19 @@ import {
 	IconShieldFill,
 	IconTruckFill,
 } from "@intentui/icons";
+import { $signOut } from "@server/auth";
 import {
 	IconCategoryFilled,
 	IconDiscountFilled,
 	IconSettingsFilled,
 } from "@tabler/icons-react";
-import { useLocation } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
+import { Loader } from "@ui/loader";
 import { useTheme } from "next-themes";
 import type { ComponentProps } from "react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { Avatar } from "@/components/ui/avatar";
 import { Link } from "@/components/ui/link";
 import { Menu } from "@/components/ui/menu";
@@ -41,11 +45,25 @@ type AppSidebarProps = ComponentProps<typeof Sidebar> & {
 };
 
 export default function AppSidebar({ user, ...props }: AppSidebarProps) {
+	const queryClient = useQueryClient();
+	const navigate = useNavigate({ from: "/admin" });
+	const router = useRouter();
 	const { theme, setTheme } = useTheme();
 	const pathname = useLocation({
 		select: (s) => s.pathname,
 	});
 	const { setIsOpenOnMobile } = useSidebar();
+
+	const { mutateAsync: signOut, isPending } = useMutation({
+		mutationKey: ["auth", "sign-out"],
+		mutationFn: () => $signOut(),
+		onSuccess: async () => {
+			await queryClient.resetQueries();
+			await navigate({ to: "/sign-in" });
+			await router.invalidate();
+		},
+		throwOnError: true,
+	});
 
 	// Listen to when pathname changes and close the sidebar
 	// biome-ignore lint/correctness/useExhaustiveDependencies: I know what I am doing!!
@@ -144,6 +162,7 @@ export default function AppSidebar({ user, ...props }: AppSidebarProps) {
 					<Menu.Content
 						className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
 						placement="bottom right"
+						dependencies={[isPending]}
 					>
 						<Menu.Section>
 							<Menu.Header separator>
@@ -186,8 +205,18 @@ export default function AppSidebar({ user, ...props }: AppSidebarProps) {
 							Switch Theme ({theme})
 						</Menu.Item>
 						<Menu.Separator />
-						<Menu.Item href="#logout">
-							<IconLogoutSquare />
+						<Menu.Item
+							isDanger
+							onAction={() =>
+								toast.promise(signOut, {
+									loading: "Signing you out...",
+									success: "You have been signed out.",
+									error: "Failed to sign out. Please try again.",
+								})
+							}
+							isDisabled={isPending}
+						>
+							{isPending ? <Loader /> : <IconLogoutSquare />}
 							Log out
 						</Menu.Item>
 					</Menu.Content>

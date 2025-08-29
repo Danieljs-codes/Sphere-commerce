@@ -28,6 +28,7 @@ function RouteComponent() {
 		control,
 		setError,
 		formState: { errors },
+		setValue,
 	} = useForm({
 		resolver: zodResolver(signInSchema),
 		defaultValues: {
@@ -68,6 +69,19 @@ function RouteComponent() {
 	});
 
 	const onSubmit = (data: SignInSchema) => {
+		signIn(data);
+	};
+
+	// Test sign-in helpers (use the email as the password per request)
+	const handleTestSignIn = (email: string) => {
+		const data = {
+			email,
+			password: email,
+			rememberMe: false,
+		} satisfies SignInSchema;
+		setValue("email", data.email);
+		setValue("password", data.password);
+		setValue("rememberMe", data.rememberMe);
 		signIn(data);
 	};
 
@@ -149,6 +163,24 @@ function RouteComponent() {
 					{isPending && <Loader />}
 					Sign in
 				</Button>
+				<div className="flex flex-col sm:flex-row gap-3 mt-2">
+					<Button
+						type="button"
+						intent="plain"
+						className="flex-1"
+						onPress={() => handleTestSignIn("onabiyiolamide@gmail.com")}
+					>
+						Test login as admin
+					</Button>
+					<Button
+						type="button"
+						intent="plain"
+						className="flex-1"
+						onPress={() => handleTestSignIn("lionelmessi@gmail.com")}
+					>
+						Test login as user
+					</Button>
+				</div>
 			</form>
 			<hr className="mt-8 mb-6 w-full border-border/50" />
 			<p className="text-muted-fg text-sm/6">
