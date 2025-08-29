@@ -1,4 +1,5 @@
 import { CartItemRow } from "@components/cart-item-row";
+import { EmptyFile } from "@components/empty-file";
 import { createFileRoute } from "@tanstack/react-router";
 import { buttonStyles } from "@ui/button";
 import { Card } from "@ui/card";
@@ -34,15 +35,30 @@ function RouteComponent() {
 			</div>
 			<div className="grid lg:gap-12 lg:grid-cols-2 gap-6 items-start grid-cols-1">
 				<div>
-					<div>
-						{cart.map((item) => (
-							<CartItemRow
-								item={item}
-								user={context.user}
-								key={item.productId}
-							/>
-						))}
-					</div>
+					{cart.length === 0 ? (
+						<div className="flex flex-col items-center justify-center py-12 text-center">
+							<EmptyFile className="w-16 h-16 text-muted-fg mb-4" />
+							<h2 className="text-lg font-semibold text-fg mb-2">
+								Your cart is empty
+							</h2>
+							<p className="text-muted-fg mb-4">
+								Add some items to your cart to get started.
+							</p>
+							<Link to="/store" className={buttonStyles({ size: "sm" })}>
+								Continue Shopping
+							</Link>
+						</div>
+					) : (
+						<div>
+							{cart.map((item) => (
+								<CartItemRow
+									item={item}
+									user={context.user}
+									key={item.productId}
+								/>
+							))}
+						</div>
+					)}
 					<div className="flex items-center sm:justify-end justify-center mt-4">
 						<Link
 							to="/store"
