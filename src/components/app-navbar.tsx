@@ -176,11 +176,6 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 	const pathname = useLocation({
 		select: (s) => s.pathname,
 	});
-	// const {} = useNavbar
-
-	// useEffect(() => {
-	// 	setIsOpenOnMobile(false);
-	// }, [pathname]);
 
 	const { data: cart } = useSuspenseQueryDeferred(getCartQueryOptions());
 	return (
