@@ -10,10 +10,10 @@ const { NGROK_AUTH_TOKEN } = loadEnv("", process.cwd(), "NGROK_AUTH_TOKEN");
 
 const config = defineConfig({
 	resolve: {
-		alias: {
-			// /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
-			"@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
-		},
+		// alias: {
+		// 	// /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
+		// 	"@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
+		// },
 	},
 	server: {
 		allowedHosts: ["feline-usable-stingray.ngrok-free.app"],
