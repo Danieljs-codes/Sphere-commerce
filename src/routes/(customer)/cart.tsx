@@ -1,5 +1,6 @@
 import { CartItemRow } from "@components/cart-item-row";
 import { EmptyFile } from "@components/empty-file";
+import { CartSkeleton } from "@components/skeletons/cart";
 import { createFileRoute } from "@tanstack/react-router";
 import { buttonStyles } from "@ui/button";
 import { Card } from "@ui/card";
@@ -10,6 +11,10 @@ import { getCartQueryOptions } from "@/lib/query-options";
 import { formatMoney, formatNairaShort } from "@/lib/utils";
 
 export const Route = createFileRoute("/(customer)/cart")({
+	pendingComponent: CartSkeleton,
+	loader: async ({ context }) => {
+		context.queryClient.ensureQueryData(getCartQueryOptions());
+	},
 	component: RouteComponent,
 });
 

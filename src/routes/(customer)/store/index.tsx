@@ -1,4 +1,5 @@
 import { PreviewProductModal } from "@components/preview-product-modal";
+import { StoreSkeleton } from "@components/skeletons/store";
 import { IconFilterFill } from "@intentui/icons";
 import type { Product } from "@server/db/schema";
 import { IconEyeFilled, IconHeartFilled } from "@tabler/icons-react";
@@ -50,6 +51,7 @@ const searchParamSchema = z.object({
 export const Route = createFileRoute("/(customer)/store/")({
 	validateSearch: searchParamSchema,
 	loaderDeps: ({ search }) => ({ ...search }),
+	pendingComponent: StoreSkeleton,
 	loader: async ({ context, deps }) => {
 		await Promise.all([
 			context.queryClient.ensureQueryData(getExistingCategoriesQueryOptions()),

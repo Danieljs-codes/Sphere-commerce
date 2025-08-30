@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type SummaryItemProps = {
 	label: string;
-	value: string | number;
+	value: ReactNode;
 	classNames?: {
 		container?: string;
 		label?: string;

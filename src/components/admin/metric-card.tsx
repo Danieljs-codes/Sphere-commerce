@@ -1,9 +1,10 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { StrictOmit } from "@/types";
 
 type MetricCardProps = {
-	title?: string;
+	title?: ReactNode;
 	description?: string;
 	action?: ReactNode;
 	classNames?: {
@@ -15,7 +16,7 @@ type MetricCardProps = {
 		content?: string;
 	};
 	children?: ReactNode;
-} & ComponentPropsWithoutRef<"div">;
+} & StrictOmit<ComponentPropsWithoutRef<"div">, "title">;
 
 export function MetricCard({
 	title,

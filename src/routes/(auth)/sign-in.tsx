@@ -168,7 +168,7 @@ function RouteComponent() {
 						type="button"
 						intent="plain"
 						className="flex-1"
-						onPress={() => handleTestSignIn("onabiyiolamide@gmail.com")}
+						onPress={() => handleTestSignIn("onabiyiolamide13@gmail.com")}
 					>
 						Test login as admin
 					</Button>

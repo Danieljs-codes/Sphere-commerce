@@ -41,8 +41,10 @@ const searchParamSchema = z.object({
 
 export const Route = createFileRoute("/(customer)/store/$id")({
 	validateSearch: searchParamSchema,
-	loader: ({ context, params }) => {
-		context.queryClient.ensureQueryData(getProductByIdQueryOptions(params.id));
+	loader: async ({ context, params }) => {
+		await context.queryClient.ensureQueryData(
+			getProductByIdQueryOptions(params.id),
+		);
 	},
 	component: RouteComponent,
 });

@@ -2,6 +2,7 @@ import { MetricCard } from "@components/admin/metric-card";
 import { IconPackageDelivered } from "@components/icons/package-delivered";
 import { IconPackageMoving } from "@components/icons/package-moving";
 import { IconPackageProcess } from "@components/icons/package-process";
+import { OrdersSkeleton } from "@components/skeletons/orders";
 import { SummaryItem } from "@components/summary-item";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
@@ -25,6 +26,7 @@ const searchParamSchema = z.object({
 
 export const Route = createFileRoute("/(customer)/orders")({
 	validateSearch: searchParamSchema,
+	pendingComponent: OrdersSkeleton,
 	beforeLoad: ({ context }) => {
 		if (!context.user) {
 			setFlashCookie({
