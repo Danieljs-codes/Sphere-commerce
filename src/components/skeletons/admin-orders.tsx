@@ -88,9 +88,11 @@ const AdminOrdersSkeleton = () => {
 							<Table.Column>Delivered</Table.Column>
 							<Table.Column>Actions</Table.Column>
 						</Table.Header>
-						<Table.Body items={Array.from({ length: 10 }, () => ({}))}>
-							{() => (
-								<Table.Row>
+						<Table.Body
+							items={Array.from({ length: 10 }, (_, i) => ({ id: i }))}
+						>
+							{(item) => (
+								<Table.Row id={item.id}>
 									<Table.Cell>
 										<Skeleton className="h-4 w-16" />
 									</Table.Cell>
