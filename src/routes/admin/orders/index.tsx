@@ -2,6 +2,7 @@ import { MetricCard } from "@components/admin/metric-card";
 import { IconPackageDelivered } from "@components/icons/package-delivered";
 import { IconPackageMoving } from "@components/icons/package-moving";
 import { IconPackageProcess } from "@components/icons/package-process";
+import { AdminOrdersSkeleton } from "@components/skeletons/admin-orders";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
@@ -37,6 +38,7 @@ const searchParamSchema = z.object({
 
 export const Route = createFileRoute("/admin/orders/")({
 	validateSearch: searchParamSchema,
+	pendingComponent: AdminOrdersSkeleton,
 	loaderDeps: ({ search }) => ({ ...search }),
 	loader: ({ deps, context }) => {
 		context.queryClient.ensureQueryData(getOrdersQueryOptions(deps));

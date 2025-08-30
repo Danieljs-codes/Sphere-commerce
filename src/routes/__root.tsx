@@ -12,6 +12,7 @@ import { ThemeProvider } from "next-themes";
 import nProgress from "nprogress";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import z from "zod/v4";
 import { getFlashCookie } from "@/types/utils";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -20,7 +21,12 @@ interface MyRouterContext {
 	queryClient: QueryClient;
 }
 
+const searchParamSchema = z.object({
+	mode: z.enum(["light", "dark", "system"]).optional().catch(undefined),
+});
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+	validateSearch: searchParamSchema,
 	head: () => ({
 		meta: [
 			{
@@ -65,6 +71,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const search = Route.useSearch();
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head
@@ -75,7 +82,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					forcedTheme={search.mode}
+					enableSystem
+				>
 					<InnerComponent>{children}</InnerComponent>
 					<Toast />
 				</ThemeProvider>

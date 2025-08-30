@@ -3,6 +3,7 @@ import { MetricCard } from "@components/admin/metric-card";
 import { IconArchive } from "@components/icons/archive";
 import PlusSignSquareIcon from "@components/icons/plus-size-square-icon";
 import { IconRestore } from "@components/icons/restore";
+import { ProductsSkeleton } from "@components/skeletons/products";
 import {
 	IconChevronLeft,
 	IconChevronRight,
@@ -50,6 +51,7 @@ const searchParamSchema = z.object({
 });
 
 export const Route = createFileRoute("/admin/products/")({
+	pendingComponent: ProductsSkeleton,
 	validateSearch: searchParamSchema,
 	loaderDeps: ({ search }) => ({
 		filter: search.filter,
