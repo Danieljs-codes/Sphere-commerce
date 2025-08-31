@@ -14,6 +14,7 @@ export const createRouter = () => {
 		context: { ...rqContext },
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
+		scrollRestoration: true,
 		// defaultPendingComponent: () => <div>Loading...</div>,
 		Wrap: (props: { children: React.ReactNode }) => {
 			return (

@@ -280,7 +280,12 @@ function RouteComponent() {
 											<IconEyeFilled data-slot="icon" />
 										</Button>
 									</div>
-									<Link to="/store/$id" params={{ id: product.id }}>
+									<Link
+										to="/store/$id"
+										params={{ id: product.id }}
+										resetScroll={true}
+									>
+										{/* <p>aaa</p> */}
 										<div className="aspect-square w-full overflow-hidden rounded-2xl border border-fg/15">
 											<img
 												className="size-full object-cover object-center transition-transform duration-300 group-hover:scale-105"

@@ -237,9 +237,9 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 					</Link>
 					<ThemeToggle />
 					<Separator orientation="vertical" className="mr-3 ml-1 h-5" />
-					{user ? (
+					{user?.isAdmin === true ? (
 						<UserMenu user={user} />
-					) : (
+					) : user == null ? (
 						<Link
 							to="/sign-in"
 							className={buttonStyles({
@@ -249,7 +249,7 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 						>
 							Sign in
 						</Link>
-					)}
+					) : null}
 				</NavbarSection>
 			</Navbar>
 			<NavbarMobile>
@@ -279,9 +279,9 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 				</Link>
 				<ThemeToggle />
 				<NavbarSeparator className="mr-2.5" />
-				{user ? (
+				{user?.isAdmin === true ? (
 					<UserMenu user={user} />
-				) : (
+				) : user == null ? (
 					<Link
 						to="/sign-in"
 						className={buttonStyles({
@@ -292,7 +292,7 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 					>
 						Sign in
 					</Link>
-				)}
+				) : null}
 			</NavbarMobile>
 		</NavbarProvider>
 	);
