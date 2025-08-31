@@ -17,7 +17,10 @@ import { eq } from "drizzle-orm";
 import z from "zod/v4";
 import { env } from "@/env";
 import { checkoutSchema } from "@/lib/schema";
+import { formatMoney } from "@/lib/utils";
 import { setFlashCookie } from "@/types/utils";
+
+const PAYSTACK_LIMIT_IN_KOBO = 99_999_999 * 100;
 
 // So create a paystack payment transaction
 // Don't store pending transaction
@@ -167,6 +170,12 @@ export const $checkout = createServerFn({
 			postalCode: data.postalCode,
 			country: data.country,
 		};
+
+		if (total > PAYSTACK_LIMIT_IN_KOBO) {
+			throw new Error(
+				`We can't process that amount in one transaction. Please try splitting it. The maximum amount we can process in one transaction is NGN ${formatMoney(PAYSTACK_LIMIT_IN_KOBO)}.`,
+			);
+		}
 
 		const checkoutReference = `checkout-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 		const paystackResponse = await paystack.transaction.initialize({

@@ -78,10 +78,13 @@ function RouteComponent() {
 				},
 			});
 		},
-		throwOnError: true,
+		// throwOnError: true,
 		onSuccess: ({ url }) => {
 			window.location.href = url;
 		},
+		// onError: (error) => {
+		// 	toast.error(error.message);
+		// },
 	});
 
 	const { mutateAsync: validateDiscountCode, isPending } = useMutation({
@@ -107,7 +110,7 @@ function RouteComponent() {
 		toast.promise(checkout(data), {
 			loading: "Processing checkout...",
 			success: "Checkout successful!",
-			error: "Checkout failed.",
+			error: (error) => error.message,
 		});
 	};
 
