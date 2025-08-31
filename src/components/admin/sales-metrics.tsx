@@ -105,6 +105,7 @@ export const SalesMetrics = () => {
 										from: val.start.toAbsoluteString(),
 										to: val.end.toAbsoluteString(),
 									}),
+									replace: true,
 								});
 							}}
 						/>

@@ -55,7 +55,10 @@ function RouteComponent() {
 				<Button
 					size="sm"
 					onPress={() =>
-						navigate({ search: (prev) => ({ ...prev, new: true }) })
+						navigate({
+							search: (prev) => ({ ...prev, new: true }),
+							replace: true,
+						})
 					}
 				>
 					<PlusSignSquareIcon data-slot="icon" />
@@ -137,6 +140,7 @@ function RouteComponent() {
 									...prev,
 									limit: key as 10 | 20 | 30 | 40 | 50,
 								}),
+								replace: true,
 							});
 						}}
 					>
@@ -168,6 +172,7 @@ function RouteComponent() {
 										...prev,
 										page: search.page - 1,
 									}),
+									replace: true,
 								});
 							}
 						}}
@@ -185,6 +190,7 @@ function RouteComponent() {
 										...prev,
 										page: search.page + 1,
 									}),
+									replace: true,
 								});
 							}
 						}}

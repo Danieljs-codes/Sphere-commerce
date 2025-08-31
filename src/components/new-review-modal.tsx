@@ -65,7 +65,10 @@ export const NewReviewModal = () => {
 			});
 			reset();
 			toast.success("Review submitted successfully");
-			navigate({ search: (prev) => ({ ...prev, newReview: false }) });
+			navigate({
+				search: (prev) => ({ ...prev, newReview: false }),
+				replace: true,
+			});
 		},
 	});
 
@@ -131,7 +134,10 @@ export const NewReviewModal = () => {
 				isOpen={isOpen}
 				onOpenChange={(isOpen) => {
 					clearErrors();
-					navigate({ search: (prev) => ({ ...prev, newReview: isOpen }) });
+					navigate({
+						search: (prev) => ({ ...prev, newReview: isOpen }),
+						replace: true,
+					});
 				}}
 				isBlurred
 				size="xl"

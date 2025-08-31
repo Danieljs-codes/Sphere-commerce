@@ -64,7 +64,7 @@ export const NewCategoryModal = () => {
 				queryKey: getExistingCategoriesQueryOptions().queryKey,
 			});
 			reset();
-			navigate({ search: (prev) => ({ ...prev, new: false }) });
+			navigate({ search: (prev) => ({ ...prev, new: false }), replace: true });
 		},
 		throwOnError: true,
 	});
@@ -82,7 +82,10 @@ export const NewCategoryModal = () => {
 			<Modal.Content
 				isOpen={!!newCategory}
 				onOpenChange={(isOpen) => {
-					navigate({ search: (prev) => ({ ...prev, new: isOpen }) });
+					navigate({
+						search: (prev) => ({ ...prev, new: isOpen }),
+						replace: true,
+					});
 					if (!isOpen) {
 						clearErrors();
 					}

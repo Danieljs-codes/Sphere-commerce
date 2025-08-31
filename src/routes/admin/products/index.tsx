@@ -331,6 +331,7 @@ function RouteComponent() {
 											...old,
 											page: Math.max(1, search.page - 1),
 										}),
+										replace: true,
 									});
 								}}
 								isDisabled={search.page <= 1}
@@ -347,6 +348,7 @@ function RouteComponent() {
 											...old,
 											page: search.page + 1,
 										}),
+										replace: true,
 									});
 								}}
 								isDisabled={!productsData.hasNextPage}

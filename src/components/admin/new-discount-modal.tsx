@@ -53,7 +53,10 @@ export const NewDiscountModal = () => {
 					queryKey: getDiscountsQueryOptions(search).queryKey,
 				});
 				toast.success("Discount created successfully!");
-				navigate({ search: (prev) => ({ ...prev, new: false }) });
+				navigate({
+					search: (prev) => ({ ...prev, new: false }),
+					replace: true,
+				});
 				reset();
 			},
 			onError: (error) => toast.error(error.message),
@@ -70,7 +73,10 @@ export const NewDiscountModal = () => {
 				isOpen={search.new}
 				onOpenChange={(isOpen) => {
 					if (!isOpen) clearErrors();
-					navigate({ search: (prev) => ({ ...prev, new: isOpen }) });
+					navigate({
+						search: (prev) => ({ ...prev, new: isOpen }),
+						replace: true,
+					});
 				}}
 				isBlurred
 				size="2xl"

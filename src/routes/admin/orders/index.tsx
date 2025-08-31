@@ -139,6 +139,7 @@ function RouteComponent() {
 											...prev,
 											status: key as "processing" | "shipped" | "delivered",
 										}),
+										replace: true,
 									});
 								}}
 							>
@@ -252,6 +253,7 @@ function RouteComponent() {
 										...prev,
 										limit: key as 10 | 20 | 30 | 40 | 50,
 									}),
+									replace: true,
 								});
 							}}
 						>
@@ -286,6 +288,7 @@ function RouteComponent() {
 											...prev,
 											page: data.pagination.currentPage - 1,
 										}),
+										replace: true,
 									});
 								}
 							}}
@@ -303,6 +306,7 @@ function RouteComponent() {
 											...prev,
 											page: data.pagination.currentPage + 1,
 										}),
+										replace: true,
 									});
 								}
 							}}

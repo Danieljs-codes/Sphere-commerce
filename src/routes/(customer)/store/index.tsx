@@ -194,6 +194,7 @@ function RouteComponent() {
 				minPrice: debouncedRange[0],
 				maxPrice: debouncedRange[1],
 			}),
+			replace: true,
 		});
 	}, [debouncedRange, navigate]);
 
@@ -203,6 +204,7 @@ function RouteComponent() {
 				...prev,
 				category: debouncedCategories,
 			}),
+			replace: true,
 		});
 	}, [debouncedCategories, navigate]);
 
@@ -212,6 +214,7 @@ function RouteComponent() {
 				...prev,
 				sort: debouncedSort,
 			}),
+			replace: true,
 		});
 	}, [debouncedSort, navigate]);
 
@@ -339,6 +342,7 @@ function RouteComponent() {
 											...prev,
 											page: (prev.page ?? 1) - 1,
 										}),
+										replace: true,
 									});
 								}}
 							>
@@ -354,6 +358,7 @@ function RouteComponent() {
 											...prev,
 											page: (prev.page ?? 1) + 1,
 										}),
+										replace: true,
 									});
 								}}
 							>
