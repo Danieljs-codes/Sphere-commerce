@@ -178,6 +178,19 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 	});
 
 	const { data: cart } = useSuspenseQueryDeferred(getCartQueryOptions());
+	const navigate = useNavigate();
+	const router = useRouter();
+	const queryClient = useQueryClient();
+	const { mutateAsync: signOut } = useMutation({
+		mutationKey: ["auth", "sign-out"],
+		mutationFn: () => $signOut(),
+		onSuccess: async () => {
+			await queryClient.resetQueries();
+			await navigate({ to: "/" });
+			await router.invalidate();
+		},
+		throwOnError: true,
+	});
 	return (
 		<NavbarProvider>
 			<Navbar {...props}>
@@ -244,12 +257,28 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 							to="/sign-in"
 							className={buttonStyles({
 								isCircle: true,
-								size: "sm",
+								size: "xs",
 							})}
 						>
 							Sign in
 						</Link>
-					) : null}
+					) : (
+						<Button
+							intent="danger"
+							size="xs"
+							className="rounded-full"
+							onPress={() =>
+								toast.promise(signOut, {
+									loading: "Signing you out...",
+									success: "You have been signed out.",
+									error: "Failed to sign out. Please try again.",
+								})
+							}
+						>
+							<IconLogout />
+							Sign out
+						</Button>
+					)}
 				</NavbarSection>
 			</Navbar>
 			<NavbarMobile>
@@ -292,7 +321,23 @@ export function AppNavbar({ user, ...props }: AppNavbarProps) {
 					>
 						Sign in
 					</Link>
-				) : null}
+				) : (
+					<Button
+						intent="danger"
+						size="xs"
+						className="rounded-full"
+						onPress={() =>
+							toast.promise(signOut, {
+								loading: "Signing you out...",
+								success: "You have been signed out.",
+								error: "Failed to sign out. Please try again.",
+							})
+						}
+					>
+						<IconLogout />
+						Sign out
+					</Button>
+				)}
 			</NavbarMobile>
 		</NavbarProvider>
 	);
